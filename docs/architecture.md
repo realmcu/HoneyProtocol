@@ -1,0 +1,121 @@
+# 2 协议结构介绍
+
+## 2.1 协议栈结构
+
+```mermaid
+block-beta
+    columns 1
+    L2["Application Layer (L2)"]
+    L1["Transport Layer (L1)"]
+    L0["UART Profile (L0)"]
+    BLE["BLE Stack"]
+```
+
+
+## 2.2 L0 — UART Profile（BLE）
+
+### GATT 服务 UUID
+
+| 角色                 | UUID                                                        |
+|----------------------|-------------------------------------------------------------|
+| UART Profile Service | `6e400001-b5a3-f393-e0a9-e50e24dcca9e`                      |
+| Write Characteristic | `6e400002-b5a3-f393-e0a9-e50e24dcca9e`                      |
+| Read Characteristic  | `6e400003-b5a3-f393-e0a9-e50e24dcca9e`（Notification 模式） |
+
+### 说明
+
+- **Device 端（Master）**：实现 UART Profile，提供 write + read 两个 characteristic
+- **Phone 端（Slave）**：基于 character operation 实现 write interface 和 receive interface
+- Phone 端 receive 基于 **notify** 模式；Device 端 receive 基于 **write character**（push 方式，非 pull）
+- MTU = **20 bytes**
+
+
+## 2.3 L1 — Transport Layer
+
+### 功能
+
+- 在 L0 之上实现可靠传输（发送 + 接收）
+- L0 MTU = 20 bytes，L1 通过拆包/组包支持最大 **65535 bytes** payload（16-bit 长度字段）
+- 实现 **ACK 机制**：接收方校验后发送 success/error ACK
+- 重传：收到 error ACK 或超时后重发，失败结果上报 L2
+
+### L1 数据包结构
+
+<table class="packet">
+  <tr><th colspan="2">L1 Packet（8 ~ 65543 bytes）</th></tr>
+  <tr><td>L1 Header<br><small>8 bytes</small></td><td>L1 Payload<br><small>0 ~ 65535 bytes</small></td></tr>
+</table>
+
+### L1 Header（8 bytes，Big-Endian）
+
+| Byte      | 位域           | 宽度    | 说明                                                      |
+|-----------|----------------|---------|-----------------------------------------------------------|
+| 0         | Magic          | 8 bits  | 固定值 `0xAB`                                             |
+| 1 \[7:6\] | Reserve        | 2 bits  | 保留                                                      |
+| 1 \[5\]   | ERR flag       | 1 bit   | 1 = 传输出错                                              |
+| 1 \[4\]   | ACK flag       | 1 bit   | 1 = 这是 ACK 包                                           |
+| 1 \[3:0\] | Version        | 4 bits  | 当前版本 = 0                                              |
+| 2~3       | Payload length | 16 bits | Big-Endian，高字节在前                                    |
+| 4~5       | CRC16          | 16 bits | **CRC-16/ARC**，仅覆盖 Payload（不含 Header），Big-Endian |
+| 6~7       | Sequence ID    | 16 bits | 包序号，Big-Endian                                        |
+
+### ACK 包格式
+
+| 包类型      | ACK flag (bit4) | ERR flag (bit5) | Payload length    |
+|-------------|-----------------|-----------------|-------------------|
+| 数据包      | 0               | 0               | 实际 payload 长度 |
+| Success ACK | 1               | 0               | 0                 |
+| Error ACK   | 1               | 1               | 0                 |
+
+!!! note "说明"
+
+    ACK 包的 Sequence ID = 被 ACK 的数据包 Sequence ID。
+
+L1 版本号：**0**
+
+
+## 2.4 L2 — Application Layer
+
+### L2 数据包结构
+
+<table class="packet">
+  <tr><td>L2 Header<br><small>2 bytes</small></td><td>L2 Payload<br><small>0 ~ 65533 bytes</small></td></tr>
+</table>
+
+!!! note "说明"
+
+    L2 Payload 上限受 L1 payload 容量约束（最大 65535 B），实际可用大小取决于设备固件缓冲区。
+
+### L2 Header（16 bits，Big-Endian）
+
+| 位域       | 宽度   | 说明                      |
+|------------|--------|---------------------------|
+| Command ID | 8 bits | 命令类型，见 Command 列表 |
+| Version    | 4 bits | L2 版本号                 |
+| Reserve    | 4 bits | 保留                      |
+
+### L2 Payload 结构
+
+<table class="packet">
+  <tr><th colspan="3">Key-Value 1</th><th colspan="3">Key-Value 2</th><th>…</th></tr>
+  <tr>
+    <td>Key<br><small>1 byte</small></td><td>Key Header<br><small>2 bytes</small></td><td>Key Value<br><small>N bytes</small></td>
+    <td>Key<br><small>1 byte</small></td><td>Key Header<br><small>2 bytes</small></td><td>Key Value<br><small>N bytes</small></td>
+    <td>…</td>
+  </tr>
+</table>
+
+### Key Header（16 bits）
+
+| 位域                        | 宽度    | 说明                               |
+|-----------------------------|---------|------------------------------------|
+| Key Value Length (v-length) | 16 bits | 该 key 的 value 字节数，最大 65535 |
+
+!!! note "说明"
+
+    原设计 \[15:9\] 为 Reserve、\[8:0\] 为 v-length（9 bits，最大 511 bytes）。  
+    已扩展为全 16 bits v-length 以支持大块传输（≥512 bytes）。双端实现须同步更新。
+
+!!! warning "实现现状"
+
+    接收侧（`hmi_l2.c` 的 `parse_kvs`）已按全 16 bits 解析。发送侧多数命令按全 16 bits 写入，但文件传输命令（`hmi_l2_cmd_xfer.c` 的 `xfer_send`）仍保留 `(val_len >> 8) & 0x01` 的 9-bit 旧掩码。该命令当前所有响应的 value 均 ≤ 3 bytes，故实际未触发截断；若将来该函数用于发送 ≥512 bytes 的 value，需先移除此掩码。
