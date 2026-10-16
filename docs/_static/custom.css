@@ -17,6 +17,20 @@ body {
   font-size: 13px;
 }
 
+.rst-content table.docutils thead th {
+  background: #f7f7f7;
+  border-color: #d9d9d9;
+  color: #111111;
+  font-weight: 700;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.rst-content table.docutils > caption .caption-text {
+  color: #1f4e78;
+  font-weight: 600;
+}
+
 .rst-content code.literal {
   overflow-wrap: anywhere;
 }
