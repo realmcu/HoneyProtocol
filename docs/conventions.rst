@@ -28,3 +28,8 @@
 
 | 当某 command 下某 key 的 value 为空时，v-length = 0。
 | Key Header 固定占用 **2 个字节**\ ，v-length = 0 时这 2 个字节仍须发送，不可省略。
+
+1.3 CRC16 计算范围
+------------------
+
+算法 **CRC-16/ARC**\ ：多项式 ``0x8005``\ （反射 ``0xA001``\ ），初值 ``0x0000``\ ，输入/输出均反射（refin=refout=true），无末异或（xorout=0）。\ **仅覆盖 Payload**\ ，不含 Header。空 payload（ACK 包）的 CRC 为初值 ``0x0000``\ 。自检：ASCII ``"123456789"`` → ``0xBB3D``\ 。

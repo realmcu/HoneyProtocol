@@ -11,4 +11,3 @@
    architecture
    protocol/index
    commands/index
-   appendix
