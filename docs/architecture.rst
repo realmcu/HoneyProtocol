@@ -51,12 +51,12 @@ GATT 服务 UUID
 L1 数据包结构
 ~~~~~~~~~~~~~
 
-.. raw:: html
+.. list-table:: L1 Packet（8 ~ 65543 bytes）
+   :widths: 30 70
+   :class: packet-table
 
-   <table class="packet">
-     <tr><th colspan="2">L1 Packet（8 ~ 65543 bytes）</th></tr>
-     <tr><td>L1 Header<br><small>8 bytes</small></td><td>L1 Payload<br><small>0 ~ 65535 bytes</small></td></tr>
-   </table>
+   * - L1 Header（8 bytes）
+     - L1 Payload（0 ~ 65535 bytes）
 
 L1 Header（8 bytes，Big-Endian）
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -104,11 +104,12 @@ L1 版本号：\ **0**
 L2 数据包结构
 ~~~~~~~~~~~~~
 
-.. raw:: html
+.. list-table:: L2 Packet（2 ~ 65535 bytes）
+   :widths: 20 80
+   :class: packet-table
 
-   <table class="packet">
-     <tr><td>L2 Header<br><small>2 bytes</small></td><td>L2 Payload<br><small>0 ~ 65533 bytes</small></td></tr>
-   </table>
+   * - L2 Header（2 bytes）
+     - L2 Payload（0 ~ 65533 bytes）
 
 .. note:: 说明
 
@@ -128,16 +129,25 @@ Reserve    4 bits 保留
 L2 Payload 结构
 ~~~~~~~~~~~~~~~
 
-.. raw:: html
+.. list-table:: L2 Payload 结构
+   :header-rows: 1
+   :widths: 14 14 14 14 14 14 16
+   :class: packet-table
 
-   <table class="packet">
-     <tr><th colspan="3">Key-Value 1</th><th colspan="3">Key-Value 2</th><th>…</th></tr>
-     <tr>
-       <td>Key<br><small>1 byte</small></td><td>Key Header<br><small>2 bytes</small></td><td>Key Value<br><small>N bytes</small></td>
-       <td>Key<br><small>1 byte</small></td><td>Key Header<br><small>2 bytes</small></td><td>Key Value<br><small>N bytes</small></td>
-       <td>…</td>
-     </tr>
-   </table>
+   * - Key-Value 1
+     - Key-Value 1
+     - Key-Value 1
+     - Key-Value 2
+     - Key-Value 2
+     - Key-Value 2
+     - …
+   * - Key（1 byte）
+     - Key Header（2 bytes）
+     - Key Value（N bytes）
+     - Key（1 byte）
+     - Key Header（2 bytes）
+     - Key Value（N bytes）
+     - …
 
 Key Header（16 bits）
 ~~~~~~~~~~~~~~~~~~~~~

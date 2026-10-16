@@ -29,3 +29,19 @@ body {
   font-weight: 600;
 }
 
+.rst-content table.packet-table {
+  width: 100%;
+  table-layout: fixed;
+  text-align: center;
+}
+
+.rst-content table.packet-table th,
+.rst-content table.packet-table td {
+  text-align: center;
+  vertical-align: middle;
+}
+
+.rst-content table.packet-table tbody td {
+  background: #f6f8fa;
+  font-weight: 600;
+}
