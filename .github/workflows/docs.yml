@@ -1,4 +1,4 @@
-name: Deploy docs
+name: Deploy Sphinx docs
 
 on:
   push:
@@ -19,17 +19,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/configure-pages@v5
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
           cache: pip
       - run: pip install -r requirements.txt
-      # Mermaid 随站点一起发布（国内访问不依赖外网 CDN），但不入库
-      - run: |
-          mkdir -p docs/javascripts
-          curl -fsSL -o docs/javascripts/mermaid.min.js \
-            https://cdn.jsdelivr.net/npm/mermaid@11.17.2/dist/mermaid.min.js
-      - run: mkdocs build --strict
+      - run: python tools/sync_protocol.py --check
+      - run: sphinx-build -W --keep-going -b html docs site
       - uses: actions/upload-pages-artifact@v3
         with:
           path: site

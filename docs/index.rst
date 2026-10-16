@@ -1,0 +1,25 @@
+智能穿戴蓝牙私有通信协议
+========================
+
+协议内容分为两部分：\ `Excel 同步的协议规范 <protocol/index.html>`__ 描述目标格式； `设备端实现状态 <commands/index.html>`__ 记录当前固件已经实现到哪里以及历史差异。
+
+.. warning:: 实现现状
+
+   本文档描述协议设计，其中部分内容设备端尚未实现或与实现存在差异。凡有差异之处均已在对应章节以「实现现状」提示框标注，联调前请留意：
+
+   - **L0 / L1 传输层**：已完整实现，与本文档一致（帧头位域、大端序、 CRC-16/ARC、ACK 与重传）。
+   - **L2 命令**：13 个命令中仅 5 个有完整业务逻辑——设置（``0x02``，仅时间设置）、绑定（``0x03``）、运动数据（``0x05``，仅运动 Data type）、文件传输、BLE 连接参数（``0x0c``）。各命令逐一状态见 :ref:`Command 列表 <command-list>` 的「实现状态」列。
+   - **运动数据命令** （``0x05``）：运动历史同步（Data type ``0x01``）双端已实现，可联调；睡眠（Data type ``0x02``）设备端仍缺存储层，详见 :doc:`运动数据命令 <commands/0x05-sport-data>` 开头说明。
+   - **文件传输命令**：命令 ID 已从 ``0x0b`` 改为 ``0x10``，详见 :doc:`文件传输命令 <commands/0x10-file-transfer>`。
+
+   「桩」指 handler 已注册但只打印日志：设备会在 L1 层回 ACK，但不产生任何 L2 响应，手机端若等待 L2 响应将超时。
+
+.. toctree::
+   :maxdepth: 2
+   :caption: 文档目录
+
+   conventions
+   architecture
+   protocol/index
+   commands/index
+   appendix

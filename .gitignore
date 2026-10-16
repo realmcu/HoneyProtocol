@@ -1,4 +1,5 @@
 site/
 .venv/
-# 构建时由 CI 下载，不入库
-docs/javascripts/mermaid.min.js
+docs/_build/
+__pycache__/
+*.pyc
