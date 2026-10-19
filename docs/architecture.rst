@@ -160,9 +160,4 @@ Key Value Length (v-length) 16 bits 该 key 的 value 字节数，最大 65535
 
 .. note:: 说明
 
-  原设计 \[15:9\] 为 Reserve、\[8:0\] 为 v-length（9 bits，最大 511 bytes）。  
-   已扩展为全 16 bits v-length 以支持大块传输（≥512 bytes）。双端实现须同步更新。
-
-.. warning:: 实现现状
-
-   接收侧（``hmi_l2.c`` 的 ``parse_kvs``）已按全 16 bits 解析。发送侧多数命令按全 16 bits 写入，但文件传输命令（``hmi_l2_cmd_xfer.c`` 的 ``xfer_send``）仍保留 ``(val_len >> 8) & 0x01`` 的 9-bit 旧掩码。该命令当前所有响应的 value 均 ≤ 3 bytes，故实际未触发截断；若将来该函数用于发送 ≥512 bytes 的 value，需先移除此掩码。
+   Key Header 的 16 bits 全部用于 v-length，支持大块传输。

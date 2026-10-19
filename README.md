@@ -5,12 +5,14 @@
 文档源文件位于 `docs/`（reStructuredText），由 [Sphinx](https://www.sphinx-doc.org/) 生成静态站点，
 推送到 `main` 分支后由 GitHub Actions 构建并发布到 GitHub Pages。
 
-## 协议内容分层
+## 命令页来源
 
-- `docs/protocol/`：由 `docs/assets/protocol/cavo-realtek-watch-protocol.xlsx` 自动生成的新协议规范，Excel 是这一层的事实来源。
-- `docs/commands/`：设备端当前实现状态、历史命令格式和实现差异，不等同于 Excel 中的目标协议。
+第 3 章 L2 Command 详解的页面都在 `docs/protocol/`：
 
-生成页面请勿直接修改。更新 Excel 后执行：
+- Excel 中有的命令：由 `docs/assets/protocol/cavo-realtek-watch-protocol.xlsx` 自动生成，Excel 是这些页面的事实来源。
+- Excel 中没有的命令：手写维护，并登记在 `tools/sync_protocol.py` 的 `MANUAL_DOCUMENTS` 中。
+
+索引页 `docs/protocol/index.rst` 和 Excel 生成的页面请勿直接修改。更新 Excel 或 `MANUAL_DOCUMENTS` 后执行：
 
 ```bash
 python tools/sync_protocol.py
@@ -30,7 +32,8 @@ python3 -m http.server -d site 8000  # 浏览器打开 http://127.0.0.1:8000
 
 ## 编写约定
 
-- 每个 L2 命令一页，放在 `docs/commands/`；新增页面需加入对应索引页的 `toctree`。
+- 每个 L2 命令一页，放在 `docs/protocol/`；手写的新命令页需登记到 `MANUAL_DOCUMENTS`，再重新生成索引页。
+- 命令页以二级标题组织章节，单条 Key 用三级标题放在“具体命令”下；`:tocdepth: 2` 放在页面标题之前，侧栏只显示章节。Excel 页的标题由同步脚本维护。
 - 字节布局、帧结构等使用 `.. code-block:: text`；时序图使用 `.. mermaid::`。
 - 与设备端实现不一致之处使用 Sphinx admonition：
 

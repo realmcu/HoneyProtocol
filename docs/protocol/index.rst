@@ -1,70 +1,99 @@
-协议规范（Excel 同步）
-========================================================================================================================
+3 L2 Command 详解
+=================
 
-.. note:: 内容来源
-
-   本目录由 :download:`cavo-realtek-watch-protocol.xlsx <../assets/protocol/cavo-realtek-watch-protocol.xlsx>` 自动生成。
-   Excel 是当前新协议的事实来源；``docs/commands/`` 保留设备端实现状态和历史差异说明。
-
-工作簿映射
-------------------------------------------------------------------------------------------------------------------------
-
-.. list-table::
+.. list-table:: Command 列表
    :header-rows: 1
    :widths: auto
 
-   * - :doc:`0x02 设置命令 <0x02-settings>`
-     - ``设置模块(CMD 02)``
+   * - Command ID
+     - 命令
+     - 规范状态
+     - 来源
+   * - ``0x01``
+     - :doc:`固件升级命令 <0x01-firmware-upgrade>`
      - 未标注
-   * - :doc:`0x03 绑定命令 <0x03-bind>`
-     - ``绑定模块(CMD 03)``
+     - 手工维护
+   * - ``0x02``
+     - :doc:`设置命令 <0x02-settings>`
      - 未标注
-   * - :doc:`0x04 通知命令 <0x04-notification>`
-     - ``通知模块(CMD 04)``
-     - 讨论中
-   * - :doc:`0x05 数据命令 <0x05-data>`
-     - ``数据模块(CMD 05)``
-     - 讨论中
-   * - :doc:`0x11 点测命令 <0x11-measurement>`
-     - ``点测模块(CMD 11)``
-     - 讨论中
-   * - :doc:`0x12 模拟数据命令 <0x12-simulator>`
-     - ``模拟模块(CMD 12)``
-     - 讨论中
-   * - :doc:`0x13 音频命令 <0x13-audio>`
-     - ``音频模块(CMD 13)``
-     - 讨论中
-   * - :doc:`0x0A 日志命令 <0x0a-log>`
-     - ``日志模块(CMD 0A)``
-     - 讨论中
-   * - :doc:`天气类型 <weather-types>`
-     - ``天气类型``
+     - 工作簿
+   * - ``0x03``
+     - :doc:`绑定命令 <0x03-bind>`
      - 未标注
-   * - :doc:`语音编码 <language-codes>`
-     - ``语音编码``
+     - 工作簿
+   * - ``0x04``
+     - :doc:`通知命令 <0x04-notification>`
+     - 讨论中
+     - 工作簿
+   * - ``0x05``
+     - :doc:`数据命令 <0x05-data>`
+     - 讨论中
+     - 工作簿
+   * - ``0x06``
+     - :doc:`工厂测试命令 <0x06-factory-test>`
      - 未标注
+     - 手工维护
+   * - ``0x08``
+     - :doc:`Dump Stack 命令 <0x08-dump-stack>`
+     - 未标注
+     - 手工维护
+   * - ``0x09``
+     - :doc:`测试 Flash 读取命令 <0x09-flash-read>`
+     - 未标注
+     - 手工维护
+   * - ``0x0A``
+     - :doc:`日志命令 <0x0a-log>`
+     - 讨论中
+     - 工作簿
+   * - ``0x0C``
+     - :doc:`BLE 连接参数命令 <0x0c-ble-conn-param>`
+     - 未标注
+     - 手工维护
+   * - ``0x0D``
+     - :doc:`WiFi 配网命令 <0x0d-wifi-provision>`
+     - 未标注
+     - 手工维护
+   * - ``0x10``
+     - :doc:`文件传输命令 <0x10-file-transfer>`
+     - 未标注
+     - 手工维护
+   * - ``0x11``
+     - :doc:`点测命令 <0x11-measurement>`
+     - 讨论中
+     - 工作簿
+   * - ``0x12``
+     - :doc:`模拟数据命令 <0x12-simulator>`
+     - 讨论中
+     - 工作簿
+   * - ``0x13``
+     - :doc:`音频命令 <0x13-audio>`
+     - 讨论中
+     - 工作簿
 
-同步与校验
-------------------------------------------------------------------------------------------------------------------------
+.. note::
 
-.. code-block:: bash
+   原 ``0x07`` 控制命令已并入 ``0x04`` 通知命令；``0x0B`` 是文件传输命令的原编号。两者均保留不用。``0x0E``\ （视频流）与 ``0x0F``\ （远程控制）已预留，规范待补。
 
-   python tools/sync_protocol.py
-   python tools/sync_protocol.py --check
+.. warning:: 工作簿引用缺口
 
-导入工具会检查完整报文的 ``v-length``、损坏的公式值、工作簿引用缺口，并生成 ``source.json`` 供 CI 校验。
+   源工作簿提及以下工作表，但当前文件未包含：``交互示例``、``多条数据示例``、``应用类型``、``待确认``、``数据类型``、``生成规则``。相关描述保留原文，不能据此推断缺失的格式。
 
 .. toctree::
    :maxdepth: 1
    :hidden:
 
+   0x01-firmware-upgrade
    0x02-settings
    0x03-bind
    0x04-notification
    0x05-data
+   0x06-factory-test
+   0x08-dump-stack
+   0x09-flash-read
+   0x0a-log
+   0x0c-ble-conn-param
+   0x0d-wifi-provision
+   0x10-file-transfer
    0x11-measurement
    0x12-simulator
    0x13-audio
-   0x0a-log
-   weather-types
-   language-codes

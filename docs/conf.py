@@ -23,7 +23,7 @@ html_theme_options = {
     "navigation_depth": 4,
     "prev_next_buttons_location": "both",
     "style_external_links": True,
-    "style_nav_header_background": "#1f4e78",
+    "style_nav_header_background": "#17645b",
 }
 html_static_path = ["_static"]
 html_css_files = ["custom.css"]
@@ -43,4 +43,3 @@ html_context = {
 mermaid_version = "11.17.2"
 copybutton_prompt_text = r"^\$ |^> |^python tools/"
 copybutton_prompt_is_regexp = True
-

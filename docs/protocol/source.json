@@ -77,7 +77,7 @@
     {
       "sheet": "语音编码",
       "filename": "language-codes.rst",
-      "title": "语音编码",
+      "title": "语言编码",
       "command": null,
       "status": null,
       "rows": 105
@@ -88,9 +88,6 @@
     "formula_count": 0,
     "formula_errors": [],
     "missing_referenced_sheets": {
-      "语言编码": [
-        "设置模块(CMD 02)!F46"
-      ],
       "应用类型": [
         "通知模块(CMD 04)!A63"
       ],

@@ -8,6 +8,7 @@ import hashlib
 import json
 import re
 import sys
+import unicodedata
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Iterable
@@ -77,10 +78,44 @@ DOCUMENTS = (
     Document("音频模块(CMD 13)", "0x13-audio.rst", "0x13 音频命令", "13"),
     Document("日志模块(CMD 0A)", "0x0a-log.rst", "0x0A 日志命令", "0A"),
     Document("天气类型", "weather-types.rst", "天气类型"),
-    Document("语音编码", "language-codes.rst", "语音编码"),
+    Document("语音编码", "language-codes.rst", "语言编码"),
+)
+
+# Commands absent from the workbook; their pages in OUTPUT_DIR are maintained by hand.
+MANUAL_DOCUMENTS = (
+    ("0x01-firmware-upgrade.rst", "0x01 固件升级命令", "01"),
+    ("0x06-factory-test.rst", "0x06 工厂测试命令", "06"),
+    ("0x08-dump-stack.rst", "0x08 Dump Stack 命令", "08"),
+    ("0x09-flash-read.rst", "0x09 测试 Flash 读取命令", "09"),
+    ("0x0c-ble-conn-param.rst", "0x0C BLE 连接参数命令", "0C"),
+    ("0x0d-wifi-provision.rst", "0x0D WiFi 配网命令", "0D"),
+    ("0x10-file-transfer.rst", "0x10 文件传输命令", "10"),
 )
 
 RST_HEADING_CHARS = ("=", "-", "~", "^")
+SECTION_NAMES = {
+    "Key 列表": "消息定义",
+    "Key（消息类型）": "消息定义",
+    "表格说明": "具体命令",
+}
+CHINESE_SECTION_NUMBERS = {
+    "一": "1",
+    "二": "2",
+    "三": "3",
+    "四": "4",
+    "五": "5",
+    "六": "6",
+}
+RELATED_DOCUMENTS = {
+    "ws-protocol-notify.md": ("通知命令", "0x04-notification"),
+    "ws-protocol-data.md": ("数据命令", "0x05-data"),
+    "ws-protocol-measure.md": ("点测命令", "0x11-measurement"),
+}
+SHEET_DOCUMENTS = {
+    "天气类型": ("天气类型", "weather-types"),
+    "语音编码": ("语言编码", "language-codes"),
+    "语言编码": ("语言编码", "language-codes"),
+}
 
 
 def sha256(path: Path) -> str:
@@ -168,12 +203,23 @@ def inline_rst(value: str) -> str:
     value = "".join(part if part.startswith("**") and part.endswith("**") else part.replace("*", r"\*") for part in parts)
     if value and (PACKET.fullmatch(value) or PACKET_WITH_GAP.fullmatch(value)):
         value = f"``{value}``"
+    for reference, (label, target) in RELATED_DOCUMENTS.items():
+        value = value.replace(reference, f":doc:`{label} <{target}>`")
+    for sheet, (label, target) in SHEET_DOCUMENTS.items():
+        value = re.sub(
+            rf'[“"]{sheet}[”"](?:工作表)?',
+            lambda match: f":doc:`{label} <{target}>`",
+            value,
+        )
+    value = value.replace("HL_Private_Protocol.md", "旧版协议（原文档未随仓库提供）")
+    value = value.replace("BLE_PROTOCOL_SPEC.html", "旧版协议（原文档未随仓库提供）")
     return value
 
 
 def heading(text: str, level: int = 1) -> str:
     char = RST_HEADING_CHARS[min(level, len(RST_HEADING_CHARS)) - 1]
-    return f"{text}\n{char * 120}"
+    width = sum(2 if unicodedata.east_asian_width(letter) in "WF" else 1 for letter in text)
+    return f"{text}\n{char * width}"
 
 
 def render_text_lines(lines: list[str]) -> str:
@@ -206,50 +252,122 @@ def render_text_lines(lines: list[str]) -> str:
 
 
 def render_table(ws, start: int, end: int, grid: list[list[str]]) -> str:
-    rows = grid[start - 1 : end]
+    rows = [row for row in grid[start - 1 : end] if any(row)]
     used_columns = [
         column
         for column in range(len(grid[0]))
         if any(row[column] for row in rows)
     ]
-    output = [".. list-table::", "   :header-rows: 1", "   :widths: auto", ""]
+    output = [
+        ".. list-table::",
+        "   :header-rows: 1",
+        "   :widths: auto",
+        f"   :class: protocol-table columns-{len(used_columns)}",
+        "",
+    ]
     for row in rows:
-        values = [inline_rst(row[column]) or r"\ " for column in used_columns]
+        values = [inline_rst(row[column]) or "—" for column in used_columns]
         output.append(f"   * - {values[0]}")
         output.extend(f"     - {value}" for value in values[1:])
     return "\n".join(output)
 
 
-def narrative_heading(text: str) -> bool:
-    first_line = text.splitlines()[0].strip()
-    return bool(
-        re.match(
-            r"^(?:[一二三四五六七八九十]+、|\d+(?:\.\d+)+\s+|\d+\.\s+|第\d+节\s+)",
-            first_line,
-        )
-    ) and len(first_line) <= 80
+def narrative_heading(text: str) -> int | None:
+    if "\n" in text or len(text) > 80:
+        return None
+    if re.match(r"^[一二三四五六七八九十]+、", text):
+        return 2
+    if re.match(r"^\d+\.\s+(?:通用说明|具体命令)$", text):
+        return 2
+    if text == "具体命令":
+        return 2
+    match = re.match(r"^(\d+(?:\.\d+)+)\s+\S", text)
+    return min(4, 2 + match.group(1).count(".")) if match else None
+
+
+def section_title(text: str) -> str | None:
+    if not narrative_heading(text):
+        return None
+    name = re.sub(r"^(?:[一二三四五六七八九十]+、|\d+(?:\.\d+)*\.?\s+)", "", text, count=1)
+    if name == "通用说明":
+        return ""
+    if name.startswith("命令格式"):
+        return "命令格式"
+    if name.startswith("操作码"):
+        return "操作码"
+    if name == "旧版协议差异" or name.startswith("与老协议（"):
+        return "旧版协议差异"
+    return SECTION_NAMES.get(name, name)
+
+
+def render_example(text: str) -> str:
+    text = re.sub(
+        r"(Value|操作数据)(?=[0-9A-Fa-f]{2}(?:\s+[0-9A-Fa-f]{2})*\s*\|)",
+        r"\1\n",
+        text,
+    )
+    label, *lines = [line.strip() for line in text.splitlines() if line.strip()]
+    if len(lines) >= 2 and lines[0].startswith("L2 Header"):
+        fields = [part.strip() for part in lines[0].split("|")]
+        values = [part.strip() for part in lines[1].split("|")]
+        if len(fields) == len(values):
+            output = [
+                f".. list-table:: {inline_rst(label)}",
+                "   :header-rows: 1",
+                "   :widths: auto",
+                "   :class: packet-table",
+                "",
+                f"   * - {inline_rst(fields[0])}",
+                *[f"     - {inline_rst(field)}" for field in fields[1:]],
+                f"   * - ``{values[0]}``",
+                *[f"     - ``{value}``" for value in values[1:]],
+            ]
+            if len(lines) > 2:
+                output.extend(["", render_text_lines(lines[2:])])
+            return "\n".join(output)
+    return f"**{inline_rst(label)}**\n\n.. code-block:: text\n\n" + "\n".join(
+        f"   {line}" for line in lines
+    )
+
+
+def render_flow(text: str) -> str:
+    lines = text.splitlines()
+    start = next(i for i, line in enumerate(lines) if line.strip() == "手机 手表")
+    end = start + 1
+    while end < len(lines) and not re.match(r"^\d+\.\s+", lines[end]):
+        end += 1
+    parts = []
+    if start:
+        parts.append(render_text_lines(lines[:start]))
+    parts.append(
+        ".. code-block:: text\n\n"
+        + "\n".join(f"   {line}" for line in lines[start:end])
+    )
+    if end < len(lines):
+        parts.append(render_text_lines(lines[end:]))
+    return "\n\n".join(parts)
 
 
 def render_narrative(values: Iterable[str]) -> str:
-    text = "\n".join(value for value in values if value).strip()
-    if not text:
-        return ""
-    lines = [line.rstrip() for line in text.splitlines()]
-    if lines and all(line.startswith(("·", "-")) for line in lines if line.strip()):
-        return render_text_lines(lines)
-    if narrative_heading(text):
-        first, *rest = lines
-        section_match = re.match(r"^(\d+(?:\.\d+)+)\s+(.+)$", first)
-        if section_match:
-            level = min(4, 2 + section_match.group(1).count("."))
-            section_heading = heading(
-                f"{section_match.group(1)} {section_match.group(2)}", level
-            )
+    parts = []
+    prose = []
+    for value in values:
+        if "灰色：L2 Header" in value:
+            continue
+        value = value.replace(
+            '，可直接对照抓包。按字段分颜色：',
+            '，可直接对照抓包。',
+        )
+        if value.startswith("示例：") or "手机 手表\n" in value:
+            if prose:
+                parts.append(render_text_lines(prose))
+                prose = []
+            parts.append(render_example(value) if value.startswith("示例：") else render_flow(value))
         else:
-            section_heading = heading(re.sub(r"^\d+\.\s+", "", first), 2)
-        body = render_text_lines(rest)
-        return f"{section_heading}\n\n{body}".rstrip()
-    return render_text_lines(lines)
+            prose.extend(value.splitlines())
+    if prose:
+        parts.append(render_text_lines(prose))
+    return "\n\n".join(part for part in parts if part)
 
 
 def render_sheet(document: Document, ws) -> tuple[str, str | None]:
@@ -259,9 +377,12 @@ def render_sheet(document: Document, ws) -> tuple[str, str | None]:
         status = grid[1][0].removeprefix("状态：").strip()
 
     blocks = []
-    row = 1
+    sections = {}
+    last_section = None
+    last_label = None
+    row = 1 if document.command is None else 2
     while row <= len(grid):
-        if row <= 2:
+        if row == 2 and status:
             row += 1
             continue
         if not any(grid[row - 1]):
@@ -272,73 +393,140 @@ def render_sheet(document: Document, ws) -> tuple[str, str | None]:
             blocks.append(render_table(ws, row, end, grid))
             row = end + 1
             continue
+        current = [value for value in grid[row - 1] if value]
+        title = section_title(current[0]) if len(current) == 1 else None
+        if title is not None:
+            number = re.match(r"^(\d+(?:\.\d+)*)(?:\.\s+|\s+)", current[0])
+            chinese_number = re.match(r"^([一二三四五六])、", current[0])
+            section_number = (
+                number.group(1)
+                if number
+                else CHINESE_SECTION_NUMBERS[chinese_number.group(1)] if chinese_number else None
+            )
+            if title and title != last_section:
+                if section_number:
+                    label = f"cmd-{document.command.lower()}-section-{section_number.replace('.', '-')}"
+                    sections[section_number] = (title, label)
+                    blocks.append(f".. _{label}:")
+                    last_label = label
+                else:
+                    last_label = None
+                blocks.append(heading(title, 2))
+                last_section = title
+            elif title and section_number and last_label:
+                sections[section_number] = (title, last_label)
+            if title == "命令格式":
+                blocks.append("以下为 L2 层命令格式，不含 L1 帧头。")
+            if title == "旧版协议差异":
+                blocks.append("源工作簿引用的旧版协议原文未随仓库提供，以下差异待对照原文复核。")
+            row += 1
+            continue
         values = []
         while row <= len(grid) and any(grid[row - 1]) and not is_table_header(ws, row):
-            values.extend(value for value in grid[row - 1] if value)
+            current = [value for value in grid[row - 1] if value]
+            if len(current) == 1 and section_title(current[0]) is not None:
+                break
+            values.append(" ".join(current))
             row += 1
         block = render_narrative(values)
         if block:
             blocks.append(block)
 
     header = [
+        ":tocdepth: 2" if document.command else ":orphan:",
         heading(document.title),
-        "",
-        ".. note:: 规范来源",
-        "",
-        f"   本页由 :download:`{SOURCE.name} <../assets/protocol/{SOURCE.name}>` 的 "
-        f"``{document.sheet}`` 工作表自动生成，请勿直接编辑。",
-        "",
-        "   修改规范后运行 ``python tools/sync_protocol.py``，并提交同步生成的页面。",
+        ".. container:: doc-meta\n\n"
+        f"   来源：:download:`协议工作簿 <../assets/protocol/{SOURCE.name}>` · "
+        f"``{document.sheet}`` 工作表（自动同步）",
     ]
     if status:
-        header.extend(["", ".. note:: 规范状态", "", f"   {status}"])
-    return "\n\n".join(header + blocks).rstrip() + "\n", status
+        label, _, summary = status.partition("。")
+        header.append(f".. container:: doc-status\n\n   **{inline_rst(label)}**　{inline_rst(summary)}")
+    page = "\n\n".join(header + blocks).rstrip() + "\n"
+    for number, (title, label) in sorted(sections.items(), key=lambda item: -len(item[0])):
+        page = re.sub(
+            rf"(?<=(?:见|按|同) ){re.escape(number)}(?![\d.])",
+            f":ref:`{title} <{label}>`",
+            page,
+        )
+        page = re.sub(
+            rf"见第\s*{re.escape(number)}\s*节",
+            f"见 :ref:`{title} <{label}>`",
+            page,
+        )
+        page = re.sub(
+            rf"第\s*{re.escape(number)}\s*节",
+            f":ref:`{title} <{label}>`",
+            page,
+        )
+        for chinese, value in CHINESE_SECTION_NUMBERS.items():
+            if number == value:
+                page = re.sub(
+                    rf'见[“"]{chinese}、[^”"]+[”"]',
+                    f"见 :ref:`{title} <{label}>`",
+                    page,
+                )
+    return page, status
 
 
-def render_index(summaries: list[dict]) -> str:
+def render_index(summaries: list[dict], missing_sheets: dict[str, list[str]]) -> str:
+    commands = [
+        (item["command"], item["title"], item["filename"], item["status"], "工作簿")
+        for item in summaries
+        if item["command"] is not None
+    ]
+    commands.extend(
+        (command, title, filename, None, "手工维护") for filename, title, command in MANUAL_DOCUMENTS
+    )
+    commands.sort(key=lambda entry: int(entry[0], 16))
     rows = [
-        ".. list-table::",
+        ".. list-table:: Command 列表",
         "   :header-rows: 1",
         "   :widths: auto",
         "",
+        "   * - Command ID",
+        "     - 命令",
+        "     - 规范状态",
+        "     - 来源",
     ]
-    for item in summaries:
-        status = (item["status"] or "未标注").split("。", 1)[0]
-        target = Path(item["filename"]).stem
+    for command, title, filename, status, source in commands:
+        name = title.removeprefix(f"0x{command} ")
         rows.extend(
             [
-                f"   * - :doc:`{item['title']} <{target}>`",
-                f"     - ``{item['sheet']}``",
-                f"     - {status}",
+                f"   * - ``0x{command}``",
+                f"     - :doc:`{name} <{Path(filename).stem}>`",
+                f"     - {(status or '未标注').split('。', 1)[0]}",
+                f"     - {source}",
             ]
         )
     return "\n".join(
         [
-            heading("协议规范（Excel 同步）"),
-            "",
-            ".. note:: 内容来源",
-            "",
-            f"   本目录由 :download:`{SOURCE.name} <../assets/protocol/{SOURCE.name}>` 自动生成。",
-            "   Excel 是当前新协议的事实来源；``docs/commands/`` 保留设备端实现状态和历史差异说明。",
-            "",
-            heading("工作簿映射", 2),
+            heading("3 L2 Command 详解"),
             "",
             *rows,
             "",
-            heading("同步与校验", 2),
+            ".. note::",
             "",
-            ".. code-block:: bash",
+            "   原 ``0x07`` 控制命令已并入 ``0x04`` 通知命令；``0x0B`` 是文件传输命令的原编号。两者均保留不用。"
+            "``0x0E``\\ （视频流）与 ``0x0F``\\ （远程控制）已预留，规范待补。",
             "",
-            "   python tools/sync_protocol.py",
-            "   python tools/sync_protocol.py --check",
-            "",
-            "导入工具会检查完整报文的 ``v-length``、损坏的公式值、工作簿引用缺口，并生成 ``source.json`` 供 CI 校验。",
-            "",
+            *(
+                [
+                    ".. warning:: 工作簿引用缺口",
+                    "",
+                    "   源工作簿提及以下工作表，但当前文件未包含："
+                    + "、".join(f"``{name}``" for name in sorted(missing_sheets))
+                    + "。相关描述保留原文，不能据此推断缺失的格式。",
+                    "",
+                ]
+                if missing_sheets else []
+            ),
+            # Outside any subsection, so commands are second-level sidebar entries.
             ".. toctree::",
             "   :maxdepth: 1",
             "   :hidden:",
             "",
-            *[f"   {Path(item['filename']).stem}" for item in summaries],
+            *[f"   {Path(filename).stem}" for _, _, filename, _, _ in commands],
             "",
         ]
     )
@@ -350,7 +538,7 @@ def validate(wb) -> tuple[dict, list[str]]:
     formulas = 0
     formula_errors = []
     missing_references: dict[str, list[str]] = {}
-    sheet_names = set(wb.sheetnames)
+    sheet_names = set(wb.sheetnames) | {"语言编码"}
     command_by_sheet = {
         document.sheet: document.command
         for document in DOCUMENTS
@@ -424,8 +612,8 @@ def build_outputs() -> tuple[dict[Path, str], dict]:
                 "rows": wb[document.sheet].max_row,
             }
         )
-    outputs[OUTPUT_DIR / "index.rst"] = render_index(summaries)
     report, errors = validate(wb)
+    outputs[OUTPUT_DIR / "index.rst"] = render_index(summaries, report["missing_referenced_sheets"])
     manifest = {
         "source": str(SOURCE.relative_to(ROOT)),
         "source_sha256": sha256(SOURCE),
