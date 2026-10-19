@@ -127,6 +127,28 @@ class ProtocolRenderingTests(unittest.TestCase):
         self.assertNotIn("   weather-types", command_index)
         self.assertNotIn("   language-codes", command_index)
 
+    def test_intro_chapters_use_concise_unnumbered_section_titles(self):
+        chapters = {
+            "conventions.rst": ("名词解释", "约定", "CRC16 计算范围"),
+            "architecture.rst": ("协议栈结构", "L0 UART 服务（BLE）", "L1 传输层", "L2 应用层"),
+        }
+        for filename, titles in chapters.items():
+            page = (ROOT / "docs" / filename).read_text(encoding="utf-8")
+            with self.subTest(filename=filename):
+                for title in titles:
+                    self.assertIn(heading(title, 2), page)
+                self.assertNotRegex(page, r"(?m)^[12]\.\d+(?:\.\d+)? .+\n[-~]+")
+        architecture = (ROOT / "docs/architecture.rst").read_text(encoding="utf-8")
+        for anchor in ("l0-uart-profile-ble", "l1-transport-layer", "l2-application-layer"):
+            self.assertIn(f".. _{anchor}:", architecture)
+
+    def test_architecture_does_not_impose_a_20_byte_mtu_limit(self):
+        architecture = (ROOT / "docs/architecture.rst").read_text(encoding="utf-8")
+        self.assertNotIn("ATT MTU", architecture)
+        self.assertNotIn("20 字节", architecture)
+        self.assertNotIn("20 bytes", architecture)
+        self.assertIn("L1 通过拆包/组包支持最大 **65535 bytes** payload", architecture)
+
     def test_flow_diagrams_and_references_render(self):
         data = self.page("0x05-data.rst")
         self.assertIn(".. code-block:: text\n\n   手机 手表", data)

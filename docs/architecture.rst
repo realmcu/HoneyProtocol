@@ -1,8 +1,8 @@
 2 协议结构介绍
 ==============
 
-2.1 协议栈结构
---------------
+协议栈结构
+----------
 
 .. mermaid::
 
@@ -13,8 +13,10 @@
        L0["UART Profile (L0)"]
        BLE["BLE Stack"]
 
-2.2 L0 — UART Profile（BLE）
-----------------------------
+.. _l0-uart-profile-ble:
+
+L0 UART 服务（BLE）
+-------------------
 
 GATT 服务 UUID
 ~~~~~~~~~~~~~~
@@ -35,16 +37,17 @@ GATT 服务 UUID
 -  **Device 端（Master）**\ ：实现 UART Profile，提供 write + read 两个 characteristic
 -  **Phone 端（Slave）**\ ：基于 character operation 实现 write interface 和 receive interface
 -  Phone 端 receive 基于 **notify** 模式；Device 端 receive 基于 **write character**\ （push 方式，非 pull）
--  MTU = **20 bytes**
 
-2.3 L1 — Transport Layer
-------------------------
+.. _l1-transport-layer:
+
+L1 传输层
+---------
 
 功能
 ~~~~
 
 -  在 L0 之上实现可靠传输（发送 + 接收）
--  L0 MTU = 20 bytes，L1 通过拆包/组包支持最大 **65535 bytes** payload（16-bit 长度字段）
+-  L1 通过拆包/组包支持最大 **65535 bytes** payload（16-bit 长度字段）
 -  实现 **ACK 机制**\ ：接收方校验后发送 success/error ACK
 -  重传：收到 error ACK 或超时后重发，失败结果上报 L2
 
@@ -98,8 +101,10 @@ Error ACK   1               1               0
 
 L1 版本号：\ **0**
 
-2.4 L2 — Application Layer
---------------------------
+.. _l2-application-layer:
+
+L2 应用层
+---------
 
 L2 数据包结构
 ~~~~~~~~~~~~~
