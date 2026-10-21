@@ -31,23 +31,6 @@ body {
   margin: 1.75rem 0 0.8rem;
 }
 
-.rst-content .doc-meta {
-  font-size: 0.85rem;
-  color: #777777;
-  margin: -0.25rem 0 1.5rem;
-}
-
-.rst-content .doc-meta p {
-  margin-bottom: 0;
-}
-
-.rst-content .doc-meta code.literal {
-  border: 0;
-  background: transparent;
-  color: #666666;
-  padding: 0;
-}
-
 .rst-content .doc-status {
   border-left: 3px solid #6ab0de;
   background: #e7f2fa;
@@ -62,20 +45,49 @@ body {
 .wy-table-responsive table td,
 .wy-table-responsive table th {
   white-space: normal;
-  vertical-align: top;
+  vertical-align: middle;
   overflow-wrap: anywhere;
 }
 
 .rst-content table.docutils {
+  width: 100%;
+  margin: 0;
+  border: 1px solid #cfd7e3;
+  border-collapse: collapse;
   font-size: 13px;
+  line-height: 1.55;
 }
 
 .rst-content table.docutils thead th {
-  background: #f7f7f7;
-  border-color: #d9d9d9;
-  color: #111111;
+  background: #dce6f2;
+  border: 1px solid #b8c6d9;
+  color: #17365d;
   font-weight: 700;
-  text-align: left;
+  padding: 0.55rem 0.7rem;
+  text-align: center;
+  vertical-align: middle;
+  white-space: nowrap;
+}
+
+.rst-content table.docutils tbody td {
+  background: #ffffff;
+  border: 1px solid #d8dee8;
+  color: #303844;
+  padding: 0.48rem 0.7rem;
+}
+
+.rst-content table.docutils tbody tr:nth-child(even) td {
+  background: #f7f9fc;
+}
+
+.rst-content table.docutils th p,
+.rst-content table.docutils td p {
+  margin: 0;
+}
+
+.rst-content table.protocol-table tbody td:first-child {
+  color: #1f2937;
+  font-weight: 600;
   white-space: nowrap;
 }
 
@@ -124,7 +136,6 @@ body {
 }
 
 .rst-content table.packet-table tbody td {
-  background: #f6f8fa;
   font-weight: 600;
 }
 

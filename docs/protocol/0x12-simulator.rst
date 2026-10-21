@@ -3,10 +3,6 @@
 0x12 模拟数据命令
 =================
 
-.. container:: doc-meta
-
-   来源：:download:`协议工作簿 <../assets/protocol/cavo-realtek-watch-protocol.xlsx>` · ``模拟模块(CMD 12)`` 工作表（自动同步）
-
 .. container:: doc-status
 
    **讨论中**　调试用：手机告诉手表"生成什么数据"，手表按参数生成历史记录，存进历史存储，和真实数据一样走数据命令 0x05 同步。按天、按小时、单条都用同一个生成命令，区别只在时间段和模式。记录格式和类型码沿用 :doc:`数据命令 <0x05-data>`。
@@ -20,8 +16,8 @@
 
 .. list-table::
    :header-rows: 1
-   :widths: auto
-   :class: protocol-table columns-4
+   :widths: 18 10 18 54
+   :class: protocol-table command-format columns-4
 
    * - 字段
      - 长度

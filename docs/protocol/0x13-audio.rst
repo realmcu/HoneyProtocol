@@ -3,10 +3,6 @@
 0x13 音频命令
 =============
 
-.. container:: doc-meta
-
-   来源：:download:`协议工作簿 <../assets/protocol/cavo-realtek-watch-protocol.xlsx>` · ``音频模块(CMD 13)`` 工作表（自动同步）
-
 .. container:: doc-status
 
    **讨论中**　本文讲手表的经典蓝牙（BR/EDR）音频：蓝牙通话（HFP）和媒体音频（A2DP）。BLE 只负责传"状态、地址、开关、配对控制"，真正的配对和连接由手机系统完成：Android 由 SDK 发起，iOS 由手表发起或用户在系统设置里操作。只有双模手表支持，功能列表 0x31 里一个 bit 控制整个命令。音乐控制、来电仍在通知命令 0x04。
@@ -20,8 +16,8 @@
 
 .. list-table::
    :header-rows: 1
-   :widths: auto
-   :class: protocol-table columns-4
+   :widths: 18 10 18 54
+   :class: protocol-table command-format columns-4
 
    * - 字段
      - 长度

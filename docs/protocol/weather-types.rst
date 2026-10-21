@@ -3,10 +3,6 @@
 天气类型
 ========
 
-.. container:: doc-meta
-
-   来源：:download:`协议工作簿 <../assets/protocol/cavo-realtek-watch-protocol.xlsx>` · ``天气类型`` 工作表（自动同步）
-
 .. list-table::
    :header-rows: 1
    :widths: auto

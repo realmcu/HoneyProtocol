@@ -3,10 +3,6 @@
 0x02 设置命令
 =============
 
-.. container:: doc-meta
-
-   来源：:download:`协议工作簿 <../assets/protocol/cavo-realtek-watch-protocol.xlsx>` · ``设置模块(CMD 02)`` 工作表（自动同步）
-
 .. _cmd-02-section-1:
 
 命令格式
@@ -16,8 +12,8 @@
 
 .. list-table::
    :header-rows: 1
-   :widths: auto
-   :class: protocol-table columns-4
+   :widths: 18 10 18 54
+   :class: protocol-table command-format columns-4
 
    * - 字段
      - 长度

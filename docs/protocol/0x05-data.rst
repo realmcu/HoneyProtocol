@@ -3,10 +3,6 @@
 0x05 数据命令
 =============
 
-.. container:: doc-meta
-
-   来源：:download:`协议工作簿 <../assets/protocol/cavo-realtek-watch-protocol.xlsx>` · ``数据模块(CMD 05)`` 工作表（自动同步）
-
 .. container:: doc-status
 
    **讨论中**　本文讲历史数据（含运动结束后的运动记录）和今日数据；即时测量（单项测量、运动过程中的控制和实时数据、心电）放到点测命令 0x11，见 :doc:`点测命令 <0x11-measurement>`。
@@ -20,8 +16,8 @@
 
 .. list-table::
    :header-rows: 1
-   :widths: auto
-   :class: protocol-table columns-4
+   :widths: 18 10 18 54
+   :class: protocol-table command-format columns-4
 
    * - 字段
      - 长度
@@ -171,8 +167,8 @@ Value = 00 未同步 | 01 一种类型 | 03 心率 | 01 一个 index | 00 今天
 
 .. list-table::
    :header-rows: 1
-   :widths: auto
-   :class: protocol-table columns-4
+   :widths: 18 10 18 54
+   :class: protocol-table command-format columns-4
 
    * - 字段
      - 长度

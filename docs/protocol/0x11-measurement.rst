@@ -3,10 +3,6 @@
 0x11 点测命令
 =============
 
-.. container:: doc-meta
-
-   来源：:download:`协议工作簿 <../assets/protocol/cavo-realtek-watch-protocol.xlsx>` · ``点测模块(CMD 11)`` 工作表（自动同步）
-
 .. container:: doc-status
 
    **讨论中**　本文讲即时测量，按 key 分三组：单项测量（含实时心率）、运动、心电。运动、心电是特殊的数据，各自用一组独立的 key；三组共用查询状态，同一时间只能有一项。历史数据和今日数据在数据命令 0x05，见 :doc:`数据命令 <0x05-data>`。运动的实时数据字段还没定、心电暂不做，先按草案写，见第 9 节。
@@ -20,8 +16,8 @@
 
 .. list-table::
    :header-rows: 1
-   :widths: auto
-   :class: protocol-table columns-4
+   :widths: 18 10 18 54
+   :class: protocol-table command-format columns-4
 
    * - 字段
      - 长度

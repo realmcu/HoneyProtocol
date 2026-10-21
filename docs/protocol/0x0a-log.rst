@@ -3,10 +3,6 @@
 0x0A 日志命令
 =============
 
-.. container:: doc-meta
-
-   来源：:download:`协议工作簿 <../assets/protocol/cavo-realtek-watch-protocol.xlsx>` · ``日志模块(CMD 0A)`` 工作表（自动同步）
-
 .. container:: doc-status
 
    **讨论中**　只做实时日志，用于联调：App 打开后手表把日志实时发过来，SDK 存成文件。沿用新协议文档 旧版协议（原文档未随仓库提供） 3.11 的三个 key，结构不改，只补清楚细节。手表上保存的日志、崩溃信息本阶段不拉取；崩溃信息保留 08 Dump Stack 命令，见第 4 节。
@@ -20,8 +16,8 @@
 
 .. list-table::
    :header-rows: 1
-   :widths: auto
-   :class: protocol-table columns-4
+   :widths: 18 10 18 54
+   :class: protocol-table command-format columns-4
 
    * - 字段
      - 长度

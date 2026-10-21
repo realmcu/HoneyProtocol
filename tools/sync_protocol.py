@@ -258,11 +258,17 @@ def render_table(ws, start: int, end: int, grid: list[list[str]]) -> str:
         for column in range(len(grid[0]))
         if any(row[column] for row in rows)
     ]
+    headers = [rows[0][column] for column in used_columns]
+    classes = ["protocol-table", f"columns-{len(used_columns)}"]
+    widths = "auto"
+    if headers == ["字段", "长度", "取值", "说明"]:
+        classes.insert(1, "command-format")
+        widths = "18 10 18 54"
     output = [
         ".. list-table::",
         "   :header-rows: 1",
-        "   :widths: auto",
-        f"   :class: protocol-table columns-{len(used_columns)}",
+        f"   :widths: {widths}",
+        f"   :class: {' '.join(classes)}",
         "",
     ]
     for row in rows:
@@ -435,9 +441,6 @@ def render_sheet(document: Document, ws) -> tuple[str, str | None]:
     header = [
         ":tocdepth: 2" if document.command else ":orphan:",
         heading(document.title),
-        ".. container:: doc-meta\n\n"
-        f"   来源：:download:`协议工作簿 <../assets/protocol/{SOURCE.name}>` · "
-        f"``{document.sheet}`` 工作表（自动同步）",
     ]
     if status:
         label, _, summary = status.partition("。")

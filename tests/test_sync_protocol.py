@@ -48,6 +48,13 @@ class ProtocolRenderingTests(unittest.TestCase):
         for name in ("0x03-bind.rst", "0x04-notification.rst", "0x05-data.rst"):
             self.assertRegex(self.page(name), r"\n消息定义\n-+\n")
 
+    def test_generated_chapters_do_not_show_source_metadata(self):
+        for document in DOCUMENTS:
+            with self.subTest(name=document.filename):
+                page = self.page(document.filename)
+                self.assertNotIn("container:: doc-meta", page)
+                self.assertNotIn("工作表（自动同步）", page)
+
     def test_manual_key_details_are_nested_under_chapters(self):
         for name in MANUAL_COMMANDS:
             with self.subTest(name=name):
@@ -171,6 +178,24 @@ class ProtocolRenderingTests(unittest.TestCase):
         title, underline = heading("二、消息定义", 2).splitlines()
         self.assertEqual(title, "二、消息定义")
         self.assertGreater(len(underline), len(title))
+
+    def test_command_format_tables_use_readable_column_widths(self):
+        for name in (
+            "0x02-settings.rst",
+            "0x03-bind.rst",
+            "0x04-notification.rst",
+            "0x05-data.rst",
+            "0x0a-log.rst",
+            "0x11-measurement.rst",
+            "0x12-simulator.rst",
+            "0x13-audio.rst",
+        ):
+            with self.subTest(name=name):
+                page = self.page(name)
+                self.assertIn(":widths: 18 10 18 54", page)
+                self.assertIn(
+                    ":class: protocol-table command-format columns-4", page
+                )
 
 
 if __name__ == "__main__":

@@ -3,10 +3,6 @@
 0x04 通知命令
 =============
 
-.. container:: doc-meta
-
-   来源：:download:`协议工作簿 <../assets/protocol/cavo-realtek-watch-protocol.xlsx>` · ``通知模块(CMD 04)`` 工作表（自动同步）
-
 .. container:: doc-status
 
    **讨论中**　本文讲手机和手表之间的实时交互：来电、消息、音乐、查找手表 / 找手机、远程拍照、电量。这些都是"发生了一件事"，不是保存在手表上的配置，所以不放设置命令 0x02。老协议 04 提醒命令和 07 控制命令里的交互都并到这里，07 编号保留不用，见第 5 节。
@@ -20,8 +16,8 @@
 
 .. list-table::
    :header-rows: 1
-   :widths: auto
-   :class: protocol-table columns-4
+   :widths: 18 10 18 54
+   :class: protocol-table command-format columns-4
 
    * - 字段
      - 长度
