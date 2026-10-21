@@ -211,8 +211,6 @@ def inline_rst(value: str) -> str:
             lambda match: f":doc:`{label} <{target}>`",
             value,
         )
-    value = value.replace("HL_Private_Protocol.md", "旧版协议（原文档未随仓库提供）")
-    value = value.replace("BLE_PROTOCOL_SPEC.html", "旧版协议（原文档未随仓库提供）")
     return value
 
 
@@ -301,8 +299,6 @@ def section_title(text: str) -> str | None:
         return "命令格式"
     if name.startswith("操作码"):
         return "操作码"
-    if name == "旧版协议差异" or name.startswith("与老协议（"):
-        return "旧版协议差异"
     return SECTION_NAMES.get(name, name)
 
 
@@ -423,8 +419,6 @@ def render_sheet(document: Document, ws) -> tuple[str, str | None]:
                 sections[section_number] = (title, last_label)
             if title == "命令格式":
                 blocks.append("以下为 L2 层命令格式，不含 L1 帧头。")
-            if title == "旧版协议差异":
-                blocks.append("源工作簿引用的旧版协议原文未随仓库提供，以下差异待对照原文复核。")
             row += 1
             continue
         values = []
@@ -510,8 +504,7 @@ def render_index(summaries: list[dict], missing_sheets: dict[str, list[str]]) ->
             "",
             ".. note::",
             "",
-            "   原 ``0x07`` 控制命令已并入 ``0x04`` 通知命令；``0x0B`` 是文件传输命令的原编号。两者均保留不用。"
-            "``0x0E``\\ （视频流）与 ``0x0F``\\ （远程控制）已预留，规范待补。",
+            "   ``0x07`` 与 ``0x0B`` 保留不用。``0x0E``\\ （视频流）与 ``0x0F``\\ （远程控制）已预留，规范待补。",
             "",
             *(
                 [

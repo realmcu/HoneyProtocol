@@ -1,5 +1,7 @@
 import unittest
 
+from openpyxl import load_workbook
+
 from tools.sync_protocol import DOCUMENTS, MANUAL_DOCUMENTS, OUTPUT_DIR, ROOT, SOURCE, build_outputs, heading
 
 
@@ -10,6 +12,8 @@ MANUAL_COMMANDS = (
     "0x0d-wifi-provision.rst",
     "0x10-file-transfer.rst",
 )
+
+LEGACY_PROTOCOL_MARKERS = ("旧版协议", "旧协议", "老协议", "原编号", "原来的编号", "原定")
 
 
 class ProtocolRenderingTests(unittest.TestCase):
@@ -208,8 +212,31 @@ class ProtocolRenderingTests(unittest.TestCase):
         self.assertIn(":doc:`语言编码 <language-codes>`", self.page("0x02-settings.rst"))
         for name in ("0x04-notification.rst", "0x05-data.rst", "0x11-measurement.rst"):
             self.assertNotIn("ws-protocol-", self.page(name))
-        self.assertIn("旧版协议差异\n", self.page("0x03-bind.rst"))
-        self.assertIn("以下差异待对照原文复核", self.page("0x03-bind.rst"))
+
+    def test_protocol_docs_do_not_compare_against_legacy_protocols(self):
+        document_paths = set(self.outputs) | set(OUTPUT_DIR.glob("*.rst"))
+        document_paths.update(
+            path
+            for path in (ROOT / "docs").glob("*.rst")
+            if path.name in {"architecture.rst", "conventions.rst", "index.rst"}
+        )
+        for path in document_paths:
+            if path.suffix not in {".rst", ".json"}:
+                continue
+            content = path.read_text(encoding="utf-8")
+            for marker in LEGACY_PROTOCOL_MARKERS:
+                with self.subTest(path=str(path.relative_to(ROOT)), marker=marker):
+                    self.assertNotIn(marker, content)
+
+        workbook = load_workbook(SOURCE, read_only=True, data_only=False)
+        for worksheet in workbook.worksheets:
+            for row in worksheet.iter_rows():
+                for cell in row:
+                    if not isinstance(cell.value, str):
+                        continue
+                    for marker in LEGACY_PROTOCOL_MARKERS:
+                        with self.subTest(sheet=worksheet.title, cell=cell.coordinate, marker=marker):
+                            self.assertNotIn(marker, cell.value)
 
     def test_missing_source_sheets_are_disclosed(self):
         missing = self.manifest["checks"]["missing_referenced_sheets"]
