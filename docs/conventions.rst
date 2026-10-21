@@ -23,11 +23,11 @@
 
 若一个字节中包含两个值（a=0xa 占低 4 bit，b=0xb 占高 4 bit），字节流内容（二进制）为：\ ``1011 1010``\ 。
 
-L2 层 V-length 注意项
-~~~~~~~~~~~~~~~~~~~~~
+L2 层 Length 注意项
+~~~~~~~~~~~~~~~~~~~
 
-| 当某 command 下某 key 的 value 为空时，v-length = 0。
-| Key Header 固定占用 **2 个字节**\ ，v-length = 0 时这 2 个字节仍须发送，不可省略。
+| 当某 command 下某 key 的 value 为空时，Length = 0。
+| Key Header 固定占用 **2 个字节**\ ，Length = 0 时这 2 个字节仍须发送，不可省略。
 
 CRC16 计算范围
 --------------

@@ -1,6 +1,6 @@
 {
   "source": "docs/assets/protocol/cavo-realtek-watch-protocol.xlsx",
-  "source_sha256": "03623ee77a7c96a0eb9b56593dec7a2454a3aa52d026e6b3997b3a823afed4ca",
+  "source_sha256": "2bd17ba884401753179e3ace61d367c659401887c0c57a6d3e9490b478f28605",
   "documents": [
     {
       "sheet": "设置模块(CMD 02)",

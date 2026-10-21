@@ -31,10 +31,10 @@
      - 1B
      - 见 :ref:`消息定义 <cmd-11-section-1-3>`
      - 每种消息一个 key
-   * - v-length
+   * - Length
      - 2B
      - Value 的字节数
-     - 不含 L2 Header、Key、v-length 本身
+     - 不含 L2 Header、Key、Length 本身
    * - Value
      - 可变
      - 见 :ref:`具体命令 <cmd-11-section-1-5>`
@@ -47,7 +47,7 @@
 
    * - L2 Header
      - Key
-     - v-length
+     - Length
      - Value
    * - ``11 00``
      - ``01``

@@ -27,7 +27,7 @@
      - 1B
      - 见下方表格 KeyID
      - 每个功能一个 key
-   * - v-length
+   * - Length
      - 2B
      - 操作码 + 操作数据的总长度
      - 包含操作码这 1 个字节
@@ -47,7 +47,7 @@
 
    * - L2 Header
      - Key
-     - v-length
+     - Length
      - 操作码
      - 操作数据
    * - ``02 00``

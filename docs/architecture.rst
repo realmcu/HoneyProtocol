@@ -4,19 +4,86 @@
 协议栈结构
 ----------
 
-.. mermaid::
+.. raw:: html
 
-   block-beta
-       columns 1
-       L2["Application Layer (L2)"]
-       L1["Transport Layer (L1)"]
-       L0["UART Profile (L0)"]
-       BLE["BLE Stack"]
+   <figure class="protocol-stack" aria-labelledby="protocol-stack-caption">
+     <div class="protocol-stack__topline">
+       <div>
+         <span class="protocol-stack__kicker">END-TO-END PROTOCOL MAP</span>
+         <span class="protocol-stack__caption" id="protocol-stack-caption">命令从应用语义映射到可插拔传输承载</span>
+       </div>
+       <div class="protocol-stack__endpoints" aria-label="手机与设备双向通信">
+         <span>PHONE</span>
+         <i aria-hidden="true"></i>
+         <span>DEVICE</span>
+       </div>
+     </div>
+     <div class="protocol-stack__layers">
+       <article class="protocol-layer protocol-layer--l2">
+         <span class="protocol-layer__id">L2</span>
+         <div class="protocol-layer__identity">
+           <span class="protocol-layer__name">Application Layer</span>
+           <span class="protocol-layer__cn">应用语义层</span>
+         </div>
+         <div class="protocol-layer__tokens" aria-label="关键协议字段">
+           <span>Command</span><span>Length</span><span>Value</span>
+         </div>
+         <span class="protocol-layer__role">SEMANTIC</span>
+       </article>
+       <article class="protocol-layer protocol-layer--l1">
+         <span class="protocol-layer__id">L1</span>
+         <div class="protocol-layer__identity">
+           <span class="protocol-layer__name">Transport Layer</span>
+           <span class="protocol-layer__cn">可靠传输层</span>
+         </div>
+         <div class="protocol-layer__tokens" aria-label="关键协议字段">
+           <span>Sequence</span><span>ACK</span><span>CRC16</span>
+         </div>
+         <span class="protocol-layer__role">RELIABLE</span>
+       </article>
+       <article class="protocol-layer protocol-layer--l0 protocol-layer--adapters">
+         <span class="protocol-layer__id">L0</span>
+         <div class="protocol-layer__identity">
+           <span class="protocol-layer__name">Transport Adapters</span>
+           <span class="protocol-layer__cn">可插拔承载层</span>
+         </div>
+         <div class="protocol-adapters" aria-label="支持的传输承载">
+           <div class="protocol-adapter protocol-adapter--ble">
+             <span class="protocol-adapter__mark">BLE</span>
+             <span class="protocol-adapter__name">UART Profile</span>
+             <span class="protocol-adapter__meta">GATT · Write / Notify</span>
+           </div>
+           <div class="protocol-adapter protocol-adapter--uart">
+             <span class="protocol-adapter__mark">UART</span>
+             <span class="protocol-adapter__name">Serial</span>
+             <span class="protocol-adapter__meta">Bits · Byte stream</span>
+           </div>
+           <div class="protocol-adapter protocol-adapter--socket">
+             <span class="protocol-adapter__mark">SOCKET</span>
+             <span class="protocol-adapter__name">Network</span>
+             <span class="protocol-adapter__meta">TCP · Stream</span>
+           </div>
+         </div>
+         <span class="protocol-layer__role">PLUGGABLE</span>
+       </article>
+     </div>
+     <div class="protocol-stack__flow" aria-hidden="true">
+       <span>APPLICATION DATA</span><i></i><span>RELIABLE FRAME</span><i></i><span>BLE · UART · SOCKET</span>
+     </div>
+   </figure>
+
+.. note:: 承载扩展
+
+   L0 是可插拔接入层，L1/L2 不依赖具体承载。BLE 使用 UART Profile；UART 与 Socket 可复用相同的 L1
+   传输语义。当前规范细节以 BLE UART Profile 为主。
 
 .. _l0-uart-profile-ble:
 
-L0 UART 服务（BLE）
--------------------
+L0 接入承载
+-----------
+
+BLE UART Profile
+~~~~~~~~~~~~~~~~
 
 GATT 服务 UUID
 ~~~~~~~~~~~~~~
@@ -50,6 +117,7 @@ L1 传输层
 -  L1 通过拆包/组包支持最大 **65535 bytes** payload（16-bit 长度字段）
 -  实现 **ACK 机制**\ ：接收方校验后发送 success/error ACK
 -  重传：收到 error ACK 或超时后重发，失败结果上报 L2
+-  L1 数据包格式与具体承载解耦，可在 BLE UART Profile、UART、Socket 等链路上复用
 
 L1 数据包结构
 ~~~~~~~~~~~~~
@@ -160,9 +228,9 @@ Key Header（16 bits）
 =========================== ======= ==================================
 位域                        宽度    说明
 =========================== ======= ==================================
-Key Value Length (v-length) 16 bits 该 key 的 value 字节数，最大 65535
+Length                      16 bits 该 key 的 value 字节数，最大 65535
 =========================== ======= ==================================
 
 .. note:: 说明
 
-   Key Header 的 16 bits 全部用于 v-length，支持大块传输。
+   Key Header 的 16 bits 全部用于 Length，支持大块传输。

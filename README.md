@@ -19,7 +19,7 @@ python tools/sync_protocol.py
 python tools/sync_protocol.py --check
 ```
 
-导入工具会校验完整命令示例的 `v-length`、Excel 公式错误和引用缺口，并生成 `docs/protocol/source.json`。CI 会执行 `--check`，防止 Excel 与生成页面不一致。
+导入工具会校验完整命令示例的 `Length`、Excel 公式错误和引用缺口，并生成 `docs/protocol/source.json`。CI 会执行 `--check`，防止 Excel 与生成页面不一致。
 
 ## 本地预览
 

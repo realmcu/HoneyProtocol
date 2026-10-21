@@ -27,7 +27,7 @@
      - 1B
      - 见 :ref:`消息定义 <cmd-03-section-2>`
      - 每条消息一个 key，请求和回应各占一个 key
-   * - v-length
+   * - Length
      - 2B
      - Value 的长度
      - —
@@ -43,7 +43,7 @@
 
    * - L2 Header
      - Key
-     - v-length
+     - Length
      - Value
    * - ``03 00``
      - ``04``

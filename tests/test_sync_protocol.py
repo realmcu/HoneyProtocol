@@ -91,6 +91,23 @@ class ProtocolRenderingTests(unittest.TestCase):
                 )
                 self.assertNotIn("L2 版本号", page)
 
+    def test_command_field_uses_length_name(self):
+        generated = {document.filename for document in DOCUMENTS if document.command}
+        filenames = sorted(generated)
+        filenames.extend(filename for filename, _, _ in MANUAL_DOCUMENTS)
+        for name in filenames:
+            with self.subTest(name=name):
+                page = (
+                    self.page(name)
+                    if name in generated
+                    else (OUTPUT_DIR / name).read_text(encoding="utf-8")
+                )
+                self.assertNotIn("v-length", page)
+        for name in ("architecture.rst", "conventions.rst"):
+            with self.subTest(name=name):
+                page = (ROOT / "docs" / name).read_text(encoding="utf-8")
+                self.assertNotIn("v-length", page.lower())
+
     def test_internal_section_references_follow_renamed_headings(self):
         data = self.page("0x05-data.rst")
         self.assertIn("筛选条件（0x01、0x03 共用）", data)
@@ -150,7 +167,7 @@ class ProtocolRenderingTests(unittest.TestCase):
     def test_intro_chapters_use_concise_unnumbered_section_titles(self):
         chapters = {
             "conventions.rst": ("名词解释", "约定", "CRC16 计算范围"),
-            "architecture.rst": ("协议栈结构", "L0 UART 服务（BLE）", "L1 传输层", "L2 应用层"),
+            "architecture.rst": ("协议栈结构", "L0 接入承载", "L1 传输层", "L2 应用层"),
         }
         for filename, titles in chapters.items():
             page = (ROOT / "docs" / filename).read_text(encoding="utf-8")
@@ -159,6 +176,7 @@ class ProtocolRenderingTests(unittest.TestCase):
                     self.assertIn(heading(title, 2), page)
                 self.assertNotRegex(page, r"(?m)^[12]\.\d+(?:\.\d+)? .+\n[-~]+")
         architecture = (ROOT / "docs/architecture.rst").read_text(encoding="utf-8")
+        self.assertIn(heading("BLE UART Profile", 3), architecture)
         for anchor in ("l0-uart-profile-ble", "l1-transport-layer", "l2-application-layer"):
             self.assertIn(f".. _{anchor}:", architecture)
 
@@ -168,6 +186,20 @@ class ProtocolRenderingTests(unittest.TestCase):
         self.assertNotIn("20 字节", architecture)
         self.assertNotIn("20 bytes", architecture)
         self.assertIn("L1 通过拆包/组包支持最大 **65535 bytes** payload", architecture)
+
+    def test_architecture_stack_uses_structured_protocol_map(self):
+        architecture = (ROOT / "docs/architecture.rst").read_text(encoding="utf-8")
+        self.assertIn('<figure class="protocol-stack"', architecture)
+        self.assertNotIn("block-beta", architecture)
+        for layer in ("L2", "L1", "L0"):
+            with self.subTest(layer=layer):
+                self.assertIn(f'<span class="protocol-layer__id">{layer}</span>', architecture)
+        for adapter in ("ble", "uart", "socket"):
+            with self.subTest(adapter=adapter):
+                self.assertIn(f"protocol-adapter--{adapter}", architecture)
+        for carrier in ("BLE", "UART", "SOCKET"):
+            with self.subTest(carrier=carrier):
+                self.assertIn(f">{carrier}</span>", architecture)
 
     def test_flow_diagrams_and_references_render(self):
         data = self.page("0x05-data.rst")

@@ -139,6 +139,305 @@ body {
   font-weight: 600;
 }
 
+.protocol-stack {
+  --stack-bg: #f8fbfd;
+  --stack-line: #d8e3ec;
+  --stack-text: #172b3e;
+  --stack-muted: #5e7387;
+  margin: 1.5rem 0 2.2rem;
+  padding: 1.25rem;
+  overflow: hidden;
+  color: var(--stack-text);
+  background-color: var(--stack-bg);
+  background-image:
+    linear-gradient(rgba(61, 91, 117, 0.055) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(61, 91, 117, 0.055) 1px, transparent 1px);
+  background-size: 24px 24px;
+  border: 1px solid #d3e0e9;
+  border-radius: 8px;
+  box-shadow: 0 14px 34px rgba(30, 61, 88, 0.08);
+}
+
+.protocol-stack__topline {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1.5rem;
+  padding: 0.1rem 0.15rem 1rem;
+  border-bottom: 1px solid var(--stack-line);
+}
+
+.protocol-stack__kicker,
+.protocol-stack__role,
+.protocol-stack__flow {
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+  text-transform: uppercase;
+}
+
+.protocol-stack__kicker {
+  display: block;
+  margin-bottom: 0.28rem;
+  color: #0b6a86;
+  font-size: 0.68rem;
+  font-weight: 700;
+}
+
+.protocol-stack__caption {
+  display: block;
+  color: #334b61;
+  font-size: 0.92rem;
+  line-height: 1.5;
+}
+
+.protocol-stack__endpoints {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 0.65rem;
+  min-height: 28px;
+  padding: 0.3rem 0.65rem;
+  color: #294b66;
+  background: rgba(255, 255, 255, 0.82);
+  border: 1px solid #cbdbe6;
+  border-radius: 4px;
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+  font-size: 0.68rem;
+}
+
+.protocol-stack__endpoints i {
+  position: relative;
+  display: block;
+  width: 42px;
+  height: 1px;
+  background: #8aa2b7;
+}
+
+.protocol-stack__endpoints i::before,
+.protocol-stack__endpoints i::after {
+  position: absolute;
+  top: -3px;
+  width: 7px;
+  height: 7px;
+  content: "";
+  border-top: 1px solid #147a96;
+  border-right: 1px solid #147a96;
+}
+
+.protocol-stack__endpoints i::before {
+  left: 0;
+  transform: rotate(-135deg);
+}
+
+.protocol-stack__endpoints i::after {
+  right: 0;
+  transform: rotate(45deg);
+}
+
+.protocol-stack__layers {
+  display: grid;
+  gap: 0.62rem;
+  padding: 1rem 0;
+}
+
+.protocol-layer {
+  --layer-accent: #0d7895;
+  --layer-tint: rgba(13, 120, 149, 0.055);
+  display: grid;
+  grid-template-columns: 58px minmax(160px, 1.1fr) minmax(250px, 1.65fr) 88px;
+  align-items: center;
+  gap: 1rem;
+  min-height: 76px;
+  padding: 0.8rem 0.9rem;
+  background: linear-gradient(90deg, var(--layer-tint), #ffffff 32%, #ffffff);
+  border: 1px solid #d8e3ec;
+  border-left: 3px solid var(--layer-accent);
+  border-radius: 5px;
+  box-shadow: 0 2px 8px rgba(31, 61, 86, 0.035);
+  animation: protocol-layer-enter 420ms ease-out both;
+  transition: background-color 160ms ease, border-color 160ms ease, transform 160ms ease;
+}
+
+.protocol-layer:nth-child(2) {
+  animation-delay: 55ms;
+}
+
+.protocol-layer:nth-child(3) {
+  animation-delay: 110ms;
+}
+
+.protocol-layer:hover {
+  background-color: var(--layer-tint);
+  border-color: #b9cbd9;
+  transform: translateX(2px);
+}
+
+.protocol-layer--l1 {
+  --layer-accent: #356ca8;
+  --layer-tint: rgba(53, 108, 168, 0.055);
+}
+
+.protocol-layer--l0 {
+  --layer-accent: #5d7185;
+  --layer-tint: rgba(93, 113, 133, 0.05);
+}
+
+.protocol-layer__id {
+  display: grid;
+  width: 42px;
+  height: 42px;
+  place-items: center;
+  color: var(--layer-accent);
+  background: var(--layer-tint);
+  border: 1px solid color-mix(in srgb, var(--layer-accent) 44%, transparent);
+  border-radius: 4px;
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.protocol-layer__identity {
+  display: grid;
+  gap: 0.18rem;
+  min-width: 0;
+}
+
+.protocol-layer__name {
+  color: #162b3e;
+  font-size: 0.98rem;
+  font-weight: 700;
+  line-height: 1.3;
+  overflow-wrap: anywhere;
+}
+
+.protocol-layer__cn {
+  color: var(--stack-muted);
+  font-size: 0.76rem;
+  line-height: 1.35;
+}
+
+.protocol-layer__tokens {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.38rem;
+  min-width: 0;
+}
+
+.protocol-layer__tokens span {
+  padding: 0.24rem 0.48rem;
+  color: #344d63;
+  background: #eef4f8;
+  border: 1px solid #d6e2eb;
+  border-radius: 3px;
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+  font-size: 0.66rem;
+  line-height: 1.35;
+  white-space: nowrap;
+}
+
+.protocol-adapters {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.42rem;
+  min-width: 0;
+}
+
+.protocol-adapter {
+  --adapter-accent: #356ca8;
+  --adapter-tint: rgba(53, 108, 168, 0.055);
+  display: grid;
+  gap: 0.12rem;
+  min-width: 0;
+  padding: 0.42rem 0.5rem;
+  background: linear-gradient(135deg, var(--adapter-tint), #ffffff 78%);
+  border: 1px solid #dbe5ed;
+  border-top: 2px solid var(--adapter-accent);
+  border-radius: 3px;
+}
+
+.protocol-adapter--uart {
+  --adapter-accent: #a66f12;
+  --adapter-tint: rgba(166, 111, 18, 0.06);
+}
+
+.protocol-adapter--socket {
+  --adapter-accent: #247c65;
+  --adapter-tint: rgba(36, 124, 101, 0.055);
+}
+
+.protocol-adapter__mark {
+  color: var(--adapter-accent);
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+  font-size: 0.58rem;
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.protocol-adapter__name {
+  color: #243c51;
+  font-size: 0.76rem;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+.protocol-adapter__meta {
+  color: #6a7f92;
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+  font-size: 0.57rem;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+}
+
+.protocol-layer__role {
+  justify-self: end;
+  color: var(--layer-accent);
+  font-size: 0.62rem;
+  font-weight: 700;
+  line-height: 1.35;
+  text-align: right;
+}
+
+.protocol-stack__flow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.7rem;
+  padding: 0.15rem 0 0;
+  color: #71879b;
+  font-size: 0.6rem;
+}
+
+.protocol-stack__flow i {
+  position: relative;
+  display: block;
+  width: 36px;
+  height: 1px;
+  background: #b6c7d4;
+}
+
+.protocol-stack__flow i::after {
+  position: absolute;
+  top: -2px;
+  right: 0;
+  width: 5px;
+  height: 5px;
+  content: "";
+  border-top: 1px solid #7f98ac;
+  border-right: 1px solid #7f98ac;
+  transform: rotate(45deg);
+}
+
+@keyframes protocol-layer-enter {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 @media screen and (max-width: 767px) {
   .wy-nav-content {
     padding: 1.25rem;
@@ -171,5 +470,56 @@ body {
 
   .rst-content table.packet-table {
     min-width: 470px;
+  }
+
+  .protocol-stack {
+    padding: 1rem;
+  }
+
+  .protocol-stack__topline {
+    display: grid;
+    gap: 0.8rem;
+  }
+
+  .protocol-stack__endpoints {
+    justify-self: start;
+  }
+
+  .protocol-layer {
+    grid-template-columns: 48px minmax(0, 1fr);
+    gap: 0.55rem 0.85rem;
+    min-height: 0;
+    padding: 0.75rem;
+  }
+
+  .protocol-layer__id {
+    grid-row: 1 / span 2;
+    width: 38px;
+    height: 38px;
+  }
+
+  .protocol-layer__tokens {
+    grid-column: 2;
+  }
+
+  .protocol-adapters {
+    grid-column: 2;
+    grid-template-columns: 1fr;
+  }
+
+  .protocol-layer__role {
+    display: none;
+  }
+
+  .protocol-stack__flow span:nth-of-type(2),
+  .protocol-stack__flow i:nth-of-type(2) {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .protocol-layer {
+    animation: none;
+    transition: none;
   }
 }

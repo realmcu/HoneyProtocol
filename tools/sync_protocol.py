@@ -568,7 +568,7 @@ def validate(wb) -> tuple[dict, list[str]]:
                         actual = len(tokens) - 5
                         if declared != actual:
                             errors.append(
-                                f"{ws.title}!{cell.coordinate}: declared v-length {declared}, actual {actual}"
+                                f"{ws.title}!{cell.coordinate}: declared Length {declared}, actual {actual}"
                             )
                     for pattern in reference_patterns:
                         for reference in pattern.findall(value):
@@ -674,7 +674,7 @@ def main() -> int:
     checks = manifest["checks"]
     print(
         f"checked {checks['complete_command_examples']} complete command examples; "
-        f"v-length errors: {len(checks['vlength_errors'])}"
+        f"Length errors: {len(checks['vlength_errors'])}"
     )
     missing = checks["missing_referenced_sheets"]
     if missing:
