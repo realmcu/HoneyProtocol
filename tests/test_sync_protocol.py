@@ -157,7 +157,7 @@ class ProtocolRenderingTests(unittest.TestCase):
         root_index = (ROOT / "docs/index.rst").read_text(encoding="utf-8")
         appendix = (ROOT / "docs/appendix.rst").read_text(encoding="utf-8")
         self.assertIn("   protocol/index\n   appendix\n", root_index)
-        self.assertTrue(appendix.startswith("4 附表\n"))
+        self.assertTrue(appendix.startswith("附表\n"))
         self.assertIn(
             f":download:`协议工作簿（Excel） <assets/protocol/{SOURCE.name}>`",
             appendix,
@@ -167,6 +167,18 @@ class ProtocolRenderingTests(unittest.TestCase):
         self.assertNotIn("附表", command_index)
         self.assertNotIn("   weather-types", command_index)
         self.assertNotIn("   language-codes", command_index)
+
+    def test_chapter_and_section_numbers_are_generated_by_toctree(self):
+        root_index = (ROOT / "docs/index.rst").read_text(encoding="utf-8")
+        self.assertIn("   :includehidden:\n   :numbered:\n", root_index)
+        for filename, title in (
+            ("conventions.rst", "名词解释与约定"),
+            ("architecture.rst", "协议结构介绍"),
+            ("appendix.rst", "附表"),
+        ):
+            source = (ROOT / "docs" / filename).read_text(encoding="utf-8")
+            self.assertTrue(source.startswith(f"{title}\n"), filename)
+        self.assertTrue(self.page("index.rst").startswith("L2 Command 详解\n"))
 
     def test_intro_chapters_use_concise_unnumbered_section_titles(self):
         chapters = {
@@ -203,6 +215,15 @@ class ProtocolRenderingTests(unittest.TestCase):
         self.assertEqual(architecture.count(":class: packet-table bitfield-table"), 2)
         self.assertIn("   * - Command ID\n     - 8 bits\n     - 命令类型，见 Command 列表", architecture)
         self.assertIn("   * - Length\n     - 16 bits\n     - 该 key 的 value 字节数，最大 65535", architecture)
+
+    def test_heading_hierarchy_is_visually_distinct(self):
+        stylesheet = (ROOT / "docs/_static/custom.css").read_text(encoding="utf-8")
+        self.assertIn(".rst-content h1 {\n  margin: 0 0 1.4rem;", stylesheet)
+        self.assertIn(".rst-content h2 {\n  margin: 2.4rem 0 1.05rem;", stylesheet)
+        self.assertIn("border-left: 4px solid #1f6f95;", stylesheet)
+        self.assertIn("font-size: 1.48rem;", stylesheet)
+        self.assertIn(".rst-content h3 {\n  margin: 1.65rem 0 0.7rem;", stylesheet)
+        self.assertIn("font-size: 1.04rem;", stylesheet)
 
     def test_architecture_stack_uses_structured_protocol_map(self):
         architecture = (ROOT / "docs/architecture.rst").read_text(encoding="utf-8")

@@ -1,5 +1,5 @@
-3 L2 Command 详解
-=================
+L2 Command 详解
+===============
 
 .. list-table:: Command 列表
    :header-rows: 1

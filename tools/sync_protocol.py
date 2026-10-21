@@ -498,7 +498,7 @@ def render_index(summaries: list[dict], missing_sheets: dict[str, list[str]]) ->
         )
     return "\n".join(
         [
-            heading("3 L2 Command 详解"),
+            heading("L2 Command 详解"),
             "",
             *rows,
             "",

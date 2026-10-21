@@ -13,22 +13,33 @@ body {
 }
 
 .rst-content h1 {
-  font-size: 1.8rem;
-  margin-bottom: 1rem;
+  margin: 0 0 1.4rem;
+  color: #153a56;
+  font-size: 2rem;
+  font-weight: 700;
+  line-height: 1.25;
 }
 
 .rst-content h2 {
-  font-size: 1.35rem;
+  margin: 2.4rem 0 1.05rem;
+  padding: 0.52rem 0.85rem 0.52rem 1rem;
+  color: #173f5f;
+  background: #edf4f8;
+  border: 0;
+  border-left: 4px solid #1f6f95;
+  font-size: 1.48rem;
+  font-weight: 700;
   line-height: 1.4;
-  margin: 2.2rem 0 1rem;
-  padding-bottom: 0.45rem;
-  border-bottom: 1px solid #d9d9d9;
 }
 
 .rst-content h3 {
-  font-size: 1.12rem;
-  line-height: 1.4;
-  margin: 1.75rem 0 0.8rem;
+  margin: 1.65rem 0 0.7rem;
+  padding-left: 0.58rem;
+  color: #2b506c;
+  border-left: 2px solid #bfd2df;
+  font-size: 1.04rem;
+  font-weight: 700;
+  line-height: 1.45;
 }
 
 .rst-content .doc-status {
@@ -462,11 +473,18 @@ body {
   }
 
   .rst-content h1 {
-    font-size: 1.55rem;
+    font-size: 1.7rem;
   }
 
   .rst-content h2 {
+    margin-top: 2rem;
+    padding: 0.48rem 0.65rem 0.48rem 0.75rem;
     font-size: 1.25rem;
+  }
+
+  .rst-content h3 {
+    padding-left: 0.5rem;
+    font-size: 1rem;
   }
 
   .rst-content .wy-table-responsive {
