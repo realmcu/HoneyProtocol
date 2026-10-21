@@ -78,6 +78,19 @@ class ProtocolRenderingTests(unittest.TestCase):
                 )
                 self.assertTrue(page.startswith(":tocdepth: 2\n\n0x"), name)
 
+    def test_command_pages_do_not_repeat_l2_version(self):
+        generated = {document.filename for document in DOCUMENTS if document.command}
+        filenames = sorted(generated)
+        filenames.extend(filename for filename, _, _ in MANUAL_DOCUMENTS)
+        for name in filenames:
+            with self.subTest(name=name):
+                page = (
+                    self.page(name)
+                    if name in generated
+                    else (OUTPUT_DIR / name).read_text(encoding="utf-8")
+                )
+                self.assertNotIn("L2 版本号", page)
+
     def test_internal_section_references_follow_renamed_headings(self):
         data = self.page("0x05-data.rst")
         self.assertIn("筛选条件（0x01、0x03 共用）", data)
