@@ -72,7 +72,7 @@
      </div>
    </figure>
 
-.. note:: 承载扩展
+.. note::
 
    L0 是可插拔接入层，L1/L2 不依赖具体承载。BLE 使用 UART Profile；UART 与 Socket 可复用相同的 L1
    传输语义。当前规范细节以 BLE UART Profile 为主。
@@ -163,7 +163,7 @@ Success ACK 1               0               0
 Error ACK   1               1               0
 =========== =============== =============== =================
 
-.. note:: 说明
+.. note::
 
    ACK 包的 Sequence ID = 被 ACK 的数据包 Sequence ID。
 
@@ -184,53 +184,65 @@ L2 数据包结构
    * - L2 Header（2 bytes）
      - L2 Payload（0 ~ 65533 bytes）
 
-.. note:: 说明
+.. note::
 
    L2 Payload 上限受 L1 payload 容量约束（最大 65535 B），实际可用大小取决于设备固件缓冲区。
 
 L2 Header（16 bits，Big-Endian）
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-========== ====== =========================
-位域       宽度   说明
-========== ====== =========================
-Command ID 8 bits 命令类型，见 Command 列表
-Version    4 bits L2 版本号
-Reserve    4 bits 保留
-========== ====== =========================
+.. list-table::
+   :header-rows: 1
+   :widths: 22 16 62
+   :class: packet-table bitfield-table
+
+   * - 位域
+     - 宽度
+     - 说明
+   * - Command ID
+     - 8 bits
+     - 命令类型，见 Command 列表
+   * - Version
+     - 4 bits
+     - L2 版本号
+   * - Reserve
+     - 4 bits
+     - 保留
 
 L2 Payload 结构
 ~~~~~~~~~~~~~~~
 
-.. list-table:: L2 Payload 结构
-   :header-rows: 1
-   :widths: 14 14 14 14 14 14 16
-   :class: packet-table
+L2 Payload 由连续的 Key-Value 单元组成：Key-Value 1 + Key-Value 2 + …。每个单元的字段顺序如下。
 
-   * - Key-Value 1
-     - Key-Value 1
-     - Key-Value 1
-     - Key-Value 2
-     - Key-Value 2
-     - Key-Value 2
-     - …
-   * - Key（1 byte）
-     - Key Header（2 bytes）
-     - Key Value（N bytes）
-     - Key（1 byte）
-     - Key Header（2 bytes）
-     - Key Value（N bytes）
-     - …
+.. list-table:: L2 Payload 单元结构
+   :header-rows: 1
+   :widths: 38 62
+   :class: packet-table payload-unit-table
+
+   * - 字段
+     - 长度
+   * - Key
+     - 1 byte
+   * - Key Header
+     - 2 bytes
+   * - Key Value
+     - N bytes
 
 Key Header（16 bits）
 ~~~~~~~~~~~~~~~~~~~~~
 
-=========================== ======= ==================================
-位域                        宽度    说明
-=========================== ======= ==================================
-Length                      16 bits 该 key 的 value 字节数，最大 65535
-=========================== ======= ==================================
+.. list-table::
+   :header-rows: 1
+   :widths: 22 16 62
+   :class: packet-table bitfield-table
 
-.. note:: 说明
+   * - 位域
+     - 宽度
+     - 说明
+   * - Length
+     - 16 bits
+     - 该 key 的 value 字节数，最大 65535
+
+.. note::
 
    Key Header 的 16 bits 全部用于 Length，支持大块传输。

@@ -508,7 +508,7 @@ def render_index(summaries: list[dict], missing_sheets: dict[str, list[str]]) ->
             "",
             *(
                 [
-                    ".. warning:: 工作簿引用缺口",
+                    ".. warning::",
                     "",
                     "   源工作簿提及以下工作表，但当前文件未包含："
                     + "、".join(f"``{name}``" for name in sorted(missing_sheets))

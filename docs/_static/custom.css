@@ -139,6 +139,24 @@ body {
   font-weight: 600;
 }
 
+.rst-content table.payload-unit-table th,
+.rst-content table.payload-unit-table td {
+  white-space: nowrap;
+}
+
+.rst-content table.bitfield-table th,
+.rst-content table.bitfield-table td {
+  text-align: center;
+  vertical-align: middle;
+  overflow-wrap: normal;
+  word-break: normal;
+}
+
+.rst-content table.bitfield-table th:nth-child(-n + 2),
+.rst-content table.bitfield-table td:nth-child(-n + 2) {
+  white-space: nowrap;
+}
+
 .protocol-stack {
   --stack-bg: #f8fbfd;
   --stack-line: #d8e3ec;
@@ -470,6 +488,11 @@ body {
 
   .rst-content table.packet-table {
     min-width: 470px;
+  }
+
+  .rst-content table.packet-table.payload-unit-table,
+  .rst-content table.packet-table.bitfield-table {
+    min-width: 100%;
   }
 
   .protocol-stack {

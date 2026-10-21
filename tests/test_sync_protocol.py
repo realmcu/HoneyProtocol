@@ -191,6 +191,19 @@ class ProtocolRenderingTests(unittest.TestCase):
         self.assertNotIn("20 bytes", architecture)
         self.assertIn("L1 通过拆包/组包支持最大 **65535 bytes** payload", architecture)
 
+    def test_l2_payload_table_uses_compact_unit_layout(self):
+        architecture = (ROOT / "docs/architecture.rst").read_text(encoding="utf-8")
+        self.assertIn("L2 Payload 由连续的 Key-Value 单元组成", architecture)
+        self.assertIn(".. list-table:: L2 Payload 单元结构", architecture)
+        self.assertIn(":class: packet-table payload-unit-table", architecture)
+        self.assertNotIn("* - Key-Value 1", architecture)
+
+    def test_short_bitfield_tables_use_centered_cells(self):
+        architecture = (ROOT / "docs/architecture.rst").read_text(encoding="utf-8")
+        self.assertEqual(architecture.count(":class: packet-table bitfield-table"), 2)
+        self.assertIn("   * - Command ID\n     - 8 bits\n     - 命令类型，见 Command 列表", architecture)
+        self.assertIn("   * - Length\n     - 16 bits\n     - 该 key 的 value 字节数，最大 65535", architecture)
+
     def test_architecture_stack_uses_structured_protocol_map(self):
         architecture = (ROOT / "docs/architecture.rst").read_text(encoding="utf-8")
         self.assertIn('<figure class="protocol-stack"', architecture)
@@ -243,8 +256,19 @@ class ProtocolRenderingTests(unittest.TestCase):
         self.assertIn("数据类型", missing)
         self.assertNotIn("语言编码", missing)
         index = self.page("index.rst")
-        self.assertIn("工作簿引用缺口", index)
+        self.assertIn(".. warning::", index)
         self.assertIn("``数据类型``", index)
+
+    def test_admonitions_do_not_repeat_manual_titles(self):
+        document_paths = set(self.outputs) | set(OUTPUT_DIR.glob("*.rst"))
+        document_paths.update((ROOT / "docs").glob("*.rst"))
+        for path in document_paths:
+            if path.suffix != ".rst":
+                continue
+            content = path.read_text(encoding="utf-8")
+            for line in content.splitlines():
+                with self.subTest(path=str(path.relative_to(ROOT)), line=line):
+                    self.assertFalse(line.startswith(".. note:: ") or line.startswith(".. warning:: "))
 
     def test_heading_underline_covers_wide_characters(self):
         title, underline = heading("二、消息定义", 2).splitlines()
