@@ -2,7 +2,16 @@ import unittest
 
 from openpyxl import load_workbook
 
-from tools.sync_protocol import DOCUMENTS, MANUAL_DOCUMENTS, OUTPUT_DIR, ROOT, SOURCE, build_outputs, heading
+from tools.sync_protocol import (
+    DOCUMENTS,
+    MANUAL_DOCUMENTS,
+    OUTPUT_DIR,
+    ROOT,
+    RST_SOURCED_DOCUMENTS,
+    SOURCE,
+    build_outputs,
+    heading,
+)
 
 
 MANUAL_COMMANDS = (
@@ -23,7 +32,10 @@ class ProtocolRenderingTests(unittest.TestCase):
 
     @classmethod
     def page(cls, name):
-        return cls.outputs[OUTPUT_DIR / name]
+        path = OUTPUT_DIR / name
+        if path in cls.outputs:
+            return cls.outputs[path]
+        return path.read_text(encoding="utf-8")
 
     def test_opening_sections_are_not_dropped(self):
         for name in ("0x02-settings.rst", "0x03-bind.rst"):
@@ -49,8 +61,10 @@ class ProtocolRenderingTests(unittest.TestCase):
                 self.assertRegex(page, r"\n具体命令\n-+\n")
                 self.assertNotRegex(page, r"(?m)^1\.\d+ .+\n~+")
                 self.assertNotRegex(page, r"(?m)^\d+\. 通用说明\n-+")
-        for name in ("0x03-bind.rst", "0x04-notification.rst", "0x05-data.rst"):
+        for name in ("0x03-bind.rst", "0x04-notification.rst"):
             self.assertRegex(self.page(name), r"\n消息定义\n-+\n")
+        self.assertRegex(self.page("0x05-data.rst"), r"\nKey 与交互\n-+\n")
+        self.assertIn("key-interaction", self.page("0x05-data.rst"))
 
     def test_generated_chapters_do_not_show_source_metadata(self):
         for document in DOCUMENTS:
@@ -58,6 +72,13 @@ class ProtocolRenderingTests(unittest.TestCase):
                 page = self.page(document.filename)
                 self.assertNotIn("container:: doc-meta", page)
                 self.assertNotIn("工作表（自动同步）", page)
+
+    def test_rst_sourced_command_index_lists_rst_origin(self):
+        index = self.page("index.rst")
+        self.assertIn("``0x05``", index)
+        self.assertIn("第一版本", index)
+        self.assertIn("RST", index)
+        self.assertIn("0x05-data.rst", self.manifest["rst_sourced"])
 
     def test_manual_key_details_are_nested_under_chapters(self):
         for name in MANUAL_COMMANDS:
@@ -114,9 +135,7 @@ class ProtocolRenderingTests(unittest.TestCase):
 
     def test_internal_section_references_follow_renamed_headings(self):
         data = self.page("0x05-data.rst")
-        self.assertIn("筛选条件（0x01、0x03 共用）", data)
-        self.assertIn(":ref:`筛选条件（0x01、0x03 共用） <cmd-05-section-1-4>`", data)
-        self.assertIn("见 :ref:`具体命令 <cmd-05-section-1-9>`", data)
+        self.assertIn("见 :ref:`具体命令 <cmd-05-section-2>`", data)
         bind = self.page("0x03-bind.rst")
         self.assertIn("见 :ref:`消息定义 <cmd-03-section-2>`", bind)
         self.assertNotIn('见"二、消息定义"', bind)
@@ -130,7 +149,6 @@ class ProtocolRenderingTests(unittest.TestCase):
             "0x02-settings.rst",
             "0x03-bind.rst",
             "0x04-notification.rst",
-            "0x05-data.rst",
             "0x0a-log.rst",
             "0x11-measurement.rst",
             "0x12-simulator.rst",
@@ -220,8 +238,8 @@ class ProtocolRenderingTests(unittest.TestCase):
 
     def test_flow_diagrams_and_references_render(self):
         data = self.page("0x05-data.rst")
-        self.assertIn(".. code-block:: text\n\n   手机 手表", data)
         self.assertIn(":doc:`点测命令 <0x11-measurement>`", data)
+        self.assertIn("同步全部", data)
         self.assertIn(":doc:`语言编码 <language-codes>`", self.page("0x02-settings.rst"))
         for name in ("0x04-notification.rst", "0x05-data.rst", "0x11-measurement.rst"):
             self.assertNotIn("ws-protocol-", self.page(name))
@@ -253,11 +271,11 @@ class ProtocolRenderingTests(unittest.TestCase):
 
     def test_missing_source_sheets_are_disclosed(self):
         missing = self.manifest["checks"]["missing_referenced_sheets"]
-        self.assertIn("数据类型", missing)
+        self.assertIn("应用类型", missing)
         self.assertNotIn("语言编码", missing)
         index = self.page("index.rst")
         self.assertIn(".. warning::", index)
-        self.assertIn("``数据类型``", index)
+        self.assertIn("``应用类型``", index)
 
     def test_admonitions_do_not_repeat_manual_titles(self):
         document_paths = set(self.outputs) | set(OUTPUT_DIR.glob("*.rst"))

@@ -7,12 +7,13 @@
 
 ## 命令页来源
 
-第 3 章 L2 Command 详解的页面都在 `docs/protocol/`：
+第 3 章 L2 Command 详解的页面都在 `docs/protocol/`。**在线 HTML 为对外规范**；工作簿 Excel 仅辅助未迁移命令的编辑，不必与 RST 同步。
 
-- Excel 中有的命令：由 `docs/assets/protocol/cavo-realtek-watch-protocol.xlsx` 自动生成，Excel 是这些页面的事实来源。
-- Excel 中没有的命令：手写维护，并登记在 `tools/sync_protocol.py` 的 `MANUAL_DOCUMENTS` 中。
+- **RST 源**（如 `0x05`）：直接编辑对应 `.rst`，登记在 `tools/sync_protocol.py` 的 `RST_SOURCED_DOCUMENTS`。
+- **工作簿源**（如 `0x02`～`0x04`、`0x11`…）：改 `docs/assets/protocol/cavo-realtek-watch-protocol.xlsx` 后由同步脚本生成 `.rst`。
+- **仅手写**：登记在 `MANUAL_DOCUMENTS` 中。
 
-索引页 `docs/protocol/index.rst` 和 Excel 生成的页面请勿直接修改。更新 Excel 或 `MANUAL_DOCUMENTS` 后执行：
+索引页 `docs/protocol/index.rst` 由同步脚本生成。更新 Excel、`RST_SOURCED_DOCUMENTS` 或 `MANUAL_DOCUMENTS` 后执行：
 
 ```bash
 python tools/sync_protocol.py

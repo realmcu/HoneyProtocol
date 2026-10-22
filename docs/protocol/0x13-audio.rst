@@ -136,8 +136,8 @@ Value = 01 进入可被发现
 
 .. list-table::
    :header-rows: 1
-   :widths: auto
-   :class: protocol-table columns-6
+   :widths: 5 8 16 9 14 48
+   :class: protocol-table command-detail columns-6
 
    * - Key
      - 名称
