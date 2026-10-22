@@ -3,7 +3,7 @@
 天气类型
 ========
 
-.. list-table::
+.. list-table:: 天气类型
    :header-rows: 1
    :widths: auto
    :class: protocol-table columns-3

@@ -1,6 +1,6 @@
 {
   "source": "docs/assets/protocol/cavo-realtek-watch-protocol.xlsx",
-  "source_sha256": "b9f3f8f297a5a6132d4a223943e5b8a9e47d675475abe5731745316a0a7b6ec5",
+  "source_sha256": "d3c5bbd7a2c93e8ebd6a9bb01142257515f46188cefbc7593f43594bd8faf195",
   "documents": [
     {
       "sheet": "设置模块(CMD 02)",
@@ -88,35 +88,9 @@
     "formula_count": 0,
     "formula_errors": [],
     "missing_referenced_sheets": {
-      "应用类型": [
-        "通知模块(CMD 04)!A63"
-      ],
-      "交互示例": [
-        "通知模块(CMD 04)!A63",
-        "数据模块(CMD 05)!A133",
-        "点测模块(CMD 11)!A62",
-        "模拟模块(CMD 12)!A49",
-        "音频模块(CMD 13)!A37",
-        "日志模块(CMD 0A)!A28"
-      ],
-      "待确认": [
-        "通知模块(CMD 04)!A63",
-        "数据模块(CMD 05)!A133",
-        "点测模块(CMD 11)!A62",
-        "模拟模块(CMD 12)!A49",
-        "音频模块(CMD 13)!A37",
-        "日志模块(CMD 0A)!A28"
-      ],
       "数据类型": [
         "数据模块(CMD 05)!A38",
-        "数据模块(CMD 05)!E44",
-        "数据模块(CMD 05)!A133"
-      ],
-      "多条数据示例": [
-        "数据模块(CMD 05)!A133"
-      ],
-      "生成规则": [
-        "模拟模块(CMD 12)!A49"
+        "数据模块(CMD 05)!E44"
       ]
     },
     "vlength_errors": []

@@ -240,11 +240,61 @@ class ProtocolRenderingTests(unittest.TestCase):
         self.assertIn(".. list-table:: 0x0C / 0x0D 设置（7B", data)
         self.assertIn(".. list-table:: 0x0B 今日数据（版本 1，24B）\n", data)
 
-    def test_table_captions_use_centered_italic_style(self):
+    def test_table_captions_use_numbered_upright_style(self):
+        config = (ROOT / "docs/conf.py").read_text(encoding="utf-8")
+        self.assertIn("numfig = True", config)
+        self.assertIn("numfig_secnum_depth = 2", config)
+        self.assertIn('numfig_format = {"table": "表 %s"}', config)
         stylesheet = (ROOT / "docs/_static/custom.css").read_text(encoding="utf-8")
         self.assertIn(".rst-content table.docutils > caption {", stylesheet)
         self.assertIn("text-align: center;", stylesheet)
-        self.assertIn("font-style: italic;", stylesheet)
+        self.assertIn("font-style: normal;", stylesheet)
+        self.assertNotIn("font-style: italic;", stylesheet)
+
+    def test_every_documented_table_has_a_caption(self):
+        documents = {path: content for path, content in self.outputs.items() if path.suffix == ".rst"}
+        documents.update(
+            {
+                path: path.read_text(encoding="utf-8")
+                for path in (ROOT / "docs").rglob("*.rst")
+            }
+        )
+        for path, content in documents.items():
+            for line_number, line in enumerate(content.splitlines(), start=1):
+                if not line.startswith((".. list-table::", ".. table::")):
+                    continue
+                with self.subTest(path=str(path.relative_to(ROOT)), line=line_number):
+                    self.assertRegex(line, r"^\.\. (?:list-table|table)::\s+\S")
+
+    def test_redundant_table_explanations_are_removed(self):
+        phrases = (
+            "以下为 L2 层命令格式",
+            '"具体的命令"一列为完整的 L2 数据',
+            "完整过程见\"交互示例\"工作表",
+            "需要固件确认的问题见\"待确认\"工作表",
+            "需要固件确认和待讨论的问题见\"待确认\"工作表",
+        )
+        documents = {path: content for path, content in self.outputs.items() if path.suffix == ".rst"}
+        documents.update(
+            {
+                path: path.read_text(encoding="utf-8")
+                for path in (ROOT / "docs").rglob("*.rst")
+            }
+        )
+        for path, content in documents.items():
+            for phrase in phrases:
+                with self.subTest(path=str(path.relative_to(ROOT)), phrase=phrase):
+                    self.assertNotIn(phrase, content)
+
+        workbook = load_workbook(SOURCE, read_only=True, data_only=False)
+        for worksheet in workbook.worksheets:
+            for row in worksheet.iter_rows():
+                for cell in row:
+                    if not isinstance(cell.value, str):
+                        continue
+                    for phrase in phrases:
+                        with self.subTest(sheet=worksheet.title, cell=cell.coordinate, phrase=phrase):
+                            self.assertNotIn(phrase, cell.value)
 
     def test_heading_hierarchy_is_visually_distinct(self):
         stylesheet = (ROOT / "docs/_static/custom.css").read_text(encoding="utf-8")

@@ -12,9 +12,7 @@
 命令格式
 --------
 
-以下为 L2 层命令格式，不含 L1 帧头。
-
-.. list-table::
+.. list-table:: L2 命令格式
    :header-rows: 1
    :widths: 18 10 18 54
    :class: protocol-table command-format columns-4
@@ -65,7 +63,7 @@ Value = 00 未同步 | 01 一种类型 | 03 心率 | 01 一个 index | 00 今天
 消息定义
 --------
 
-.. list-table::
+.. list-table:: 消息定义
    :header-rows: 1
    :widths: auto
    :class: protocol-table columns-5
@@ -165,7 +163,7 @@ Value = 00 未同步 | 01 一种类型 | 03 心率 | 01 一个 index | 00 今天
 筛选条件（0x01、0x03 共用）
 ---------------------------
 
-.. list-table::
+.. list-table:: 筛选条件编码
    :header-rows: 1
    :widths: 18 10 18 54
    :class: protocol-table command-format columns-4
@@ -386,7 +384,7 @@ Value = 00 未同步 | 01 一种类型 | 03 心率 | 01 一个 index | 00 今天
 
 数据类型和记录格式以后一定会变。按改动能不能兼容，分开处理：
 
-.. list-table::
+.. list-table:: 兼容性规则
    :header-rows: 1
    :widths: auto
    :class: protocol-table columns-3
@@ -433,11 +431,9 @@ SDK 按"类型 + 记录版本"解析，版本对 SDK 用户不可见，回调出
 具体命令
 --------
 
-* "具体的命令"一列为完整的 L2 数据（十六进制，大端序），可直接对照抓包。
 * 示例的时间戳都在 2026-10-12（index 0）：0 点 = 6A CC 23 00，08:30:00 = 6A CC 9A 88。
-* 数据类型和记录格式见"数据类型"工作表；一条命令里多条记录的逐字节拆解见"多条数据示例"工作表；完整的同步过程和今日数据见"交互示例"工作表；需要固件确认的问题见"待确认"工作表。
 
-.. list-table::
+.. list-table:: 协议数据示例
    :header-rows: 1
    :widths: auto
    :class: protocol-table columns-6

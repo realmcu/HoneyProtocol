@@ -12,9 +12,7 @@
 命令格式
 --------
 
-以下为 L2 层命令格式，不含 L1 帧头。
-
-.. list-table::
+.. list-table:: L2 命令格式
    :header-rows: 1
    :widths: 18 10 18 54
    :class: protocol-table command-format columns-4
@@ -57,7 +55,7 @@
 消息定义
 --------
 
-.. list-table::
+.. list-table:: 消息定义
    :header-rows: 1
    :widths: auto
    :class: protocol-table columns-5
@@ -105,10 +103,7 @@
 具体命令
 --------
 
-* "具体的命令"一列为完整的 L2 数据（十六进制，大端序），可直接对照抓包。
-* 完整过程见"交互示例"工作表；需要固件确认的问题见"待确认"工作表。
-
-.. list-table::
+.. list-table:: 协议数据示例
    :header-rows: 1
    :widths: auto
    :class: protocol-table columns-6

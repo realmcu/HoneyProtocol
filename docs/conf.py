@@ -32,6 +32,10 @@ html_show_sourcelink = False
 html_show_sphinx = False
 html_last_updated_fmt = "%Y-%m-%d"
 
+numfig = True
+numfig_secnum_depth = 2
+numfig_format = {"table": "表 %s"}
+
 html_context = {
     "display_github": True,
     "github_user": "realmcu",

@@ -3,7 +3,7 @@
 语言编码
 ========
 
-.. list-table::
+.. list-table:: 语言编码
    :header-rows: 1
    :widths: auto
    :class: protocol-table columns-3

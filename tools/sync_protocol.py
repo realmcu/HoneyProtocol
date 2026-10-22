@@ -117,6 +117,18 @@ SHEET_DOCUMENTS = {
     "语言编码": ("语言编码", "language-codes"),
 }
 
+SECTION_TABLE_CAPTIONS = {
+    "命令格式": "L2 命令格式",
+    "消息定义": "消息定义",
+    "操作码": "操作码定义",
+    "Key 分组": "Key 分组",
+    "具体命令": "协议数据示例",
+    "待确认（固件）": "待确认事项",
+    "扩展和格式变更": "兼容性规则",
+    "状态和互斥（三组共用）": "状态定义",
+    "筛选条件（0x01、0x03 共用）": "筛选条件编码",
+}
+
 
 def sha256(path: Path) -> str:
     digest = hashlib.sha256()
@@ -282,6 +294,12 @@ def render_table(
     return "\n".join(output)
 
 
+def default_table_caption(section: str | None, document_title: str) -> str:
+    if section in SECTION_TABLE_CAPTIONS:
+        return SECTION_TABLE_CAPTIONS[section]
+    return section or document_title
+
+
 def narrative_heading(text: str) -> int | None:
     if "\n" in text or len(text) > 80:
         return None
@@ -399,7 +417,8 @@ def render_sheet(document: Document, ws) -> tuple[str, str | None]:
             continue
         if is_table_header(ws, row):
             end = table_end(ws, row, grid)
-            blocks.append(render_table(ws, row, end, grid, table_caption))
+            caption = table_caption or default_table_caption(last_section, document.title)
+            blocks.append(render_table(ws, row, end, grid, caption))
             table_caption = None
             row = end + 1
             continue
@@ -429,8 +448,6 @@ def render_sheet(document: Document, ws) -> tuple[str, str | None]:
                 last_section = title
             elif title and section_number and last_label:
                 sections[section_number] = (title, last_label)
-            if title == "命令格式":
-                blocks.append("以下为 L2 层命令格式，不含 L1 帧头。")
             row += 1
             continue
         values = []

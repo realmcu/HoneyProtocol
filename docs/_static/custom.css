@@ -108,7 +108,7 @@ body {
   color: #1f4e78;
   text-align: center;
   font-size: 0.95rem;
-  font-style: italic;
+  font-style: normal;
   font-weight: 600;
 }
 
@@ -135,8 +135,9 @@ body {
 
 .rst-content table.packet-table caption {
   text-align: center;
-  font-style: italic;
+  font-style: normal;
   font-size: 0.95rem;
+  font-weight: 600;
   padding: 0.6rem 0;
 }
 
