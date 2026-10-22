@@ -193,6 +193,7 @@ class ProtocolRenderingTests(unittest.TestCase):
                 self.assertNotRegex(page, r"(?m)^[12]\.\d+(?:\.\d+)? .+\n[-~]+")
         architecture = (ROOT / "docs/architecture.rst").read_text(encoding="utf-8")
         self.assertIn(heading("BLE UART Profile", 3), architecture)
+        self.assertNotIn(heading("GATT 服务 UUID", 3), architecture)
         for anchor in ("l0-uart-profile-ble", "l1-transport-layer", "l2-application-layer"):
             self.assertIn(f".. _{anchor}:", architecture)
 
@@ -215,6 +216,35 @@ class ProtocolRenderingTests(unittest.TestCase):
         self.assertEqual(architecture.count(":class: packet-table bitfield-table"), 2)
         self.assertIn("   * - Command ID\n     - 8 bits\n     - 命令类型，见 Command 列表", architecture)
         self.assertIn("   * - Length\n     - 16 bits\n     - 该 key 的 value 字节数，最大 65535", architecture)
+
+    def test_table_names_are_captions_instead_of_section_headings(self):
+        architecture = (ROOT / "docs" / "architecture.rst").read_text(encoding="utf-8")
+        for heading_text, caption in (
+            ("L1 Header（8 bytes，Big-Endian）", ".. table:: L1 Header（8 bytes，Big-Endian）"),
+            ("ACK 包格式", ".. table:: ACK 包格式"),
+            ("L2 Header（16 bits，Big-Endian）", ".. list-table:: L2 Header（16 bits，Big-Endian）"),
+            ("Key Header（16 bits）", ".. list-table:: Key Header（16 bits）"),
+        ):
+            with self.subTest(heading=heading_text):
+                self.assertNotIn(heading(heading_text, 3), architecture)
+                self.assertIn(caption, architecture)
+        self.assertIn(".. table:: GATT 服务 UUID", architecture)
+
+        wifi = (OUTPUT_DIR / "0x0d-wifi-provision.rst").read_text(encoding="utf-8")
+        self.assertIn(".. list-table:: error 错误码\n", wifi)
+        self.assertIn(".. list-table:: state 状态码\n", wifi)
+        self.assertIn(".. list-table:: error 错误码（state=0x03）\n", wifi)
+
+        data = self.page("0x05-data.rst")
+        self.assertIn(".. list-table:: 筛选结果示例\n", data)
+        self.assertIn(".. list-table:: 0x0C / 0x0D 设置（7B", data)
+        self.assertIn(".. list-table:: 0x0B 今日数据（版本 1，24B）\n", data)
+
+    def test_table_captions_use_centered_italic_style(self):
+        stylesheet = (ROOT / "docs/_static/custom.css").read_text(encoding="utf-8")
+        self.assertIn(".rst-content table.docutils > caption {", stylesheet)
+        self.assertIn("text-align: center;", stylesheet)
+        self.assertIn("font-style: italic;", stylesheet)
 
     def test_heading_hierarchy_is_visually_distinct(self):
         stylesheet = (ROOT / "docs/_static/custom.css").read_text(encoding="utf-8")

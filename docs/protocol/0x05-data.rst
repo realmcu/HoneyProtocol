@@ -195,9 +195,7 @@ Value = 00 未同步 | 01 一种类型 | 03 心率 | 01 一个 index | 00 今天
      - 0 今天，1 昨天……
      - 例如 00 01 表示今天和昨天
 
-类型和 index 取交集：
-
-.. list-table::
+.. list-table:: 筛选结果示例
    :header-rows: 1
    :widths: auto
    :class: protocol-table columns-4
@@ -301,9 +299,7 @@ Value = 00 未同步 | 01 一种类型 | 03 心率 | 01 一个 index | 00 今天
 10. 跨零点：手表过零点后当天数据清零。App 按 0x0B 里的时间戳判断是哪一天，不按收到的时刻。
 11. 格式扩展：0x0B 第 1 字节是格式版本，规则同 :ref:`扩展和格式变更 <cmd-05-section-1-8>`：末尾加字段不升版本，老 SDK 按 Length 跳过多出的字节；不兼容的改动升版本，老 SDK 不认识的版本不解析。
 
-0x0C / 0x0D 的设置（7B，和设置命令里自动监测的格式一样，SDK 可以共用编解码）：
-
-.. list-table::
+.. list-table:: 0x0C / 0x0D 设置（7B，格式同自动监测）
    :header-rows: 1
    :widths: auto
    :class: protocol-table columns-4
@@ -337,9 +333,7 @@ Value = 00 未同步 | 01 一种类型 | 03 心率 | 01 一个 index | 00 今天
      - 2B
      - 分钟，1～1440
 
-0x0B 今日数据（版本 1，24B）：
-
-.. list-table::
+.. list-table:: 0x0B 今日数据（版本 1，24B）
    :header-rows: 1
    :widths: auto
    :class: protocol-table columns-4

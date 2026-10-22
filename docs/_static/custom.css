@@ -102,8 +102,17 @@ body {
   white-space: nowrap;
 }
 
-.rst-content table.docutils > caption .caption-text {
+.rst-content table.docutils > caption {
+  caption-side: top;
+  padding: 0.6rem 0.75rem;
   color: #1f4e78;
+  text-align: center;
+  font-size: 0.95rem;
+  font-style: italic;
+  font-weight: 600;
+}
+
+.rst-content table.docutils > caption .caption-text {
   font-weight: 600;
 }
 
@@ -125,8 +134,8 @@ body {
 }
 
 .rst-content table.packet-table caption {
-  text-align: left;
-  font-style: normal;
+  text-align: center;
+  font-style: italic;
   font-size: 0.95rem;
   padding: 0.6rem 0;
 }

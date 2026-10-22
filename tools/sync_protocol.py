@@ -249,7 +249,13 @@ def render_text_lines(lines: list[str]) -> str:
     return "\n".join(output).strip()
 
 
-def render_table(ws, start: int, end: int, grid: list[list[str]]) -> str:
+def render_table(
+    ws,
+    start: int,
+    end: int,
+    grid: list[list[str]],
+    caption: str | None = None,
+) -> str:
     rows = [row for row in grid[start - 1 : end] if any(row)]
     used_columns = [
         column
@@ -263,7 +269,7 @@ def render_table(ws, start: int, end: int, grid: list[list[str]]) -> str:
         classes.insert(1, "command-format")
         widths = "18 10 18 54"
     output = [
-        ".. list-table::",
+        f".. list-table:: {caption}" if caption else ".. list-table::",
         "   :header-rows: 1",
         f"   :widths: {widths}",
         f"   :class: {' '.join(classes)}",
@@ -382,6 +388,7 @@ def render_sheet(document: Document, ws) -> tuple[str, str | None]:
     sections = {}
     last_section = None
     last_label = None
+    table_caption = None
     row = 1 if document.command is None else 2
     while row <= len(grid):
         if row == 2 and status:
@@ -392,10 +399,15 @@ def render_sheet(document: Document, ws) -> tuple[str, str | None]:
             continue
         if is_table_header(ws, row):
             end = table_end(ws, row, grid)
-            blocks.append(render_table(ws, row, end, grid))
+            blocks.append(render_table(ws, row, end, grid, table_caption))
+            table_caption = None
             row = end + 1
             continue
         current = [value for value in grid[row - 1] if value]
+        if len(current) == 1 and current[0].startswith("表："):
+            table_caption = current[0].removeprefix("表：").strip()
+            row += 1
+            continue
         title = section_title(current[0]) if len(current) == 1 else None
         if title is not None:
             number = re.match(r"^(\d+(?:\.\d+)*)(?:\.\s+|\s+)", current[0])
@@ -424,7 +436,9 @@ def render_sheet(document: Document, ws) -> tuple[str, str | None]:
         values = []
         while row <= len(grid) and any(grid[row - 1]) and not is_table_header(ws, row):
             current = [value for value in grid[row - 1] if value]
-            if len(current) == 1 and section_title(current[0]) is not None:
+            if len(current) == 1 and (
+                current[0].startswith("表：") or section_title(current[0]) is not None
+            ):
                 break
             values.append(" ".join(current))
             row += 1
