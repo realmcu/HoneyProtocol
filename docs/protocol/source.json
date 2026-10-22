@@ -2,72 +2,16 @@
   "source": "docs/assets/protocol/cavo-realtek-watch-protocol.xlsx",
   "source_sha256": "8a80a454a5479fc2a53b8412362b27efc8277e1ac69322b83703379c4ff22691",
   "rst_sourced": [
-    "0x05-data.rst"
+    "0x02-settings.rst",
+    "0x03-bind.rst",
+    "0x04-notification.rst",
+    "0x05-data.rst",
+    "0x0a-log.rst",
+    "0x11-measurement.rst",
+    "0x12-simulator.rst",
+    "0x13-audio.rst"
   ],
   "documents": [
-    {
-      "sheet": "设置模块(CMD 02)",
-      "filename": "0x02-settings.rst",
-      "title": "0x02 设置命令",
-      "command": "02",
-      "status": null,
-      "source": "工作簿",
-      "rows": 211
-    },
-    {
-      "sheet": "绑定模块(CMD 03)",
-      "filename": "0x03-bind.rst",
-      "title": "0x03 绑定命令",
-      "command": "03",
-      "status": null,
-      "source": "工作簿",
-      "rows": 59
-    },
-    {
-      "sheet": "通知模块(CMD 04)",
-      "filename": "0x04-notification.rst",
-      "title": "0x04 通知命令",
-      "command": "04",
-      "status": "讨论中。本文定义手机和手表之间的实时交互：来电、消息、音乐、查找手表 / 找手机、远程拍照、电量。这些事件类能力统一由通知命令承载，不放入设置命令 0x02。",
-      "source": "工作簿",
-      "rows": 99
-    },
-    {
-      "sheet": "点测模块(CMD 11)",
-      "filename": "0x11-measurement.rst",
-      "title": "0x11 点测命令",
-      "command": "11",
-      "status": "讨论中。本文讲即时测量，按 key 分三组：单项测量（含实时心率）、运动、心电。运动、心电是特殊的数据，各自用一组独立的 key；三组共用查询状态，同一时间只能有一项。历史数据和今日数据在数据命令 0x05，见 ws-protocol-data.md。运动的实时数据字段还没定、心电暂不做，先按草案写，见第 9 节。",
-      "source": "工作簿",
-      "rows": 125
-    },
-    {
-      "sheet": "模拟模块(CMD 12)",
-      "filename": "0x12-simulator.rst",
-      "title": "0x12 模拟数据命令",
-      "command": "12",
-      "status": "讨论中。调试用：手机告诉手表\"生成什么数据\"，手表按参数生成历史记录，存进历史存储，和真实数据一样走数据命令 0x05 同步。按天、按小时、单条都用同一个生成命令，区别只在时间段和模式。记录格式和类型码沿用 ws-protocol-data.md。",
-      "source": "工作簿",
-      "rows": 66
-    },
-    {
-      "sheet": "音频模块(CMD 13)",
-      "filename": "0x13-audio.rst",
-      "title": "0x13 音频命令",
-      "command": "13",
-      "status": "讨论中。本文讲手表的经典蓝牙（BR/EDR）音频：蓝牙通话（HFP）和媒体音频（A2DP）。BLE 只负责传\"状态、地址、开关、配对控制\"，真正的配对和连接由手机系统完成：Android 由 SDK 发起，iOS 由手表发起或用户在系统设置里操作。只有双模手表支持，功能列表 0x31 里一个 bit 控制整个命令。音乐控制、来电仍在通知命令 0x04。",
-      "source": "工作簿",
-      "rows": 56
-    },
-    {
-      "sheet": "日志模块(CMD 0A)",
-      "filename": "0x0a-log.rst",
-      "title": "0x0A 日志命令",
-      "command": "0A",
-      "status": "讨论中。只做实时日志，用于联调：App 打开后手表把日志实时发过来，SDK 存成文件。日志命令包含三个 key，结构保持稳定，只补充细节。手表上保存的日志、崩溃信息本阶段不拉取；崩溃信息保留 08 Dump Stack 命令，见第 4 节。",
-      "source": "工作簿",
-      "rows": 35
-    },
     {
       "sheet": "天气类型",
       "filename": "weather-types.rst",
@@ -88,40 +32,82 @@
     },
     {
       "sheet": null,
+      "filename": "0x02-settings.rst",
+      "title": "0x02 设置命令",
+      "command": "02",
+      "status": "第一版本。各 Key 的操作码、规则与具体命令示例。",
+      "source": "RST",
+      "rows": null
+    },
+    {
+      "sheet": null,
+      "filename": "0x03-bind.rst",
+      "title": "0x03 绑定命令",
+      "command": "03",
+      "status": "第一版本。登录、绑定与解绑。",
+      "source": "RST",
+      "rows": null
+    },
+    {
+      "sheet": null,
+      "filename": "0x04-notification.rst",
+      "title": "0x04 通知命令",
+      "command": "04",
+      "status": "第一版本。来电、消息、音乐、查找、拍照、电量等实时通知。",
+      "source": "RST",
+      "rows": null
+    },
+    {
+      "sheet": null,
       "filename": "0x05-data.rst",
       "title": "0x05 数据命令",
       "command": "05",
-      "status": "第一版本。历史数据（含运动结束后的运动记录）与今日数据；即时测量（单项测量、运动过程中的控制和实时数据、心电）见 :doc:`点测命令 <0x11-measurement>`。",
+      "status": "第一版本。历史数据（含运动结束后的运动记录）与今日数据；即时测量见 :doc:`点测命令 <0x11-measurement>`。",
+      "source": "RST",
+      "rows": null
+    },
+    {
+      "sheet": null,
+      "filename": "0x0a-log.rst",
+      "title": "0x0A 日志命令",
+      "command": "0A",
+      "status": "第一版本。联调实时日志；崩溃栈见 :doc:`Dump Stack 命令 <0x08-dump-stack>`。",
+      "source": "RST",
+      "rows": null
+    },
+    {
+      "sheet": null,
+      "filename": "0x11-measurement.rst",
+      "title": "0x11 点测命令",
+      "command": "11",
+      "status": "第一版本。即时点测、运动过程与心电预留；历史/今日见 :doc:`数据命令 <0x05-data>`。",
+      "source": "RST",
+      "rows": null
+    },
+    {
+      "sheet": null,
+      "filename": "0x12-simulator.rst",
+      "title": "0x12 模拟数据命令",
+      "command": "12",
+      "status": "第一版本。调试用历史数据生成与清除，结果走 :doc:`数据命令 <0x05-data>` 同步。",
+      "source": "RST",
+      "rows": null
+    },
+    {
+      "sheet": null,
+      "filename": "0x13-audio.rst",
+      "title": "0x13 音频命令",
+      "command": "13",
+      "status": "第一版本。经典蓝牙音频状态与配对控制。",
       "source": "RST",
       "rows": null
     }
   ],
   "checks": {
-    "complete_command_examples": 303,
+    "complete_command_examples": 0,
     "formula_count": 0,
     "formula_errors": [],
-    "missing_referenced_sheets": {
-      "应用类型": [
-        "通知模块(CMD 04)!A63"
-      ],
-      "交互示例": [
-        "通知模块(CMD 04)!A63",
-        "点测模块(CMD 11)!A62",
-        "模拟模块(CMD 12)!A49",
-        "音频模块(CMD 13)!A37",
-        "日志模块(CMD 0A)!A28"
-      ],
-      "待确认": [
-        "通知模块(CMD 04)!A63",
-        "点测模块(CMD 11)!A62",
-        "模拟模块(CMD 12)!A49",
-        "音频模块(CMD 13)!A37",
-        "日志模块(CMD 0A)!A28"
-      ],
-      "生成规则": [
-        "模拟模块(CMD 12)!A49"
-      ]
-    },
+    "missing_referenced_sheets": {},
     "vlength_errors": []
   }
 }

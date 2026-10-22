@@ -69,20 +69,20 @@ class Document:
 
 
 DOCUMENTS = (
-    Document("设置模块(CMD 02)", "0x02-settings.rst", "0x02 设置命令", "02"),
-    Document("绑定模块(CMD 03)", "0x03-bind.rst", "0x03 绑定命令", "03"),
-    Document("通知模块(CMD 04)", "0x04-notification.rst", "0x04 通知命令", "04"),
-    Document("点测模块(CMD 11)", "0x11-measurement.rst", "0x11 点测命令", "11"),
-    Document("模拟模块(CMD 12)", "0x12-simulator.rst", "0x12 模拟数据命令", "12"),
-    Document("音频模块(CMD 13)", "0x13-audio.rst", "0x13 音频命令", "13"),
-    Document("日志模块(CMD 0A)", "0x0a-log.rst", "0x0A 日志命令", "0A"),
     Document("天气类型", "weather-types.rst", "天气类型"),
     Document("语音编码", "language-codes.rst", "语言编码"),
 )
 
-# Command pages maintained as RST; not overwritten by Excel import (workbook sheet may remain as archive).
+# L2 command pages from HoneyBox ws-protocol-*.md (tools/import_ws_protocol_md.py); not from Excel.
 RST_SOURCED_DOCUMENTS = (
+    ("0x02-settings.rst", "0x02 设置命令", "02"),
+    ("0x03-bind.rst", "0x03 绑定命令", "03"),
+    ("0x04-notification.rst", "0x04 通知命令", "04"),
     ("0x05-data.rst", "0x05 数据命令", "05"),
+    ("0x0a-log.rst", "0x0A 日志命令", "0A"),
+    ("0x11-measurement.rst", "0x11 点测命令", "11"),
+    ("0x12-simulator.rst", "0x12 模拟数据命令", "12"),
+    ("0x13-audio.rst", "0x13 音频命令", "13"),
 )
 
 # Commands absent from the workbook; their pages in OUTPUT_DIR are maintained by hand.
@@ -114,6 +114,11 @@ RELATED_DOCUMENTS = {
     "ws-protocol-notify.md": ("通知命令", "0x04-notification"),
     "ws-protocol-data.md": ("数据命令", "0x05-data"),
     "ws-protocol-measure.md": ("点测命令", "0x11-measurement"),
+    "ws-protocol-settings-commands.md": ("设置命令", "0x02-settings"),
+    "ws-protocol-bind.md": ("绑定命令", "0x03-bind"),
+    "ws-protocol-mock.md": ("模拟数据命令", "0x12-simulator"),
+    "ws-protocol-audio.md": ("音频命令", "0x13-audio"),
+    "ws-protocol-log.md": ("日志命令", "0x0a-log"),
 }
 SHEET_DOCUMENTS = {
     "天气类型": ("天气类型", "weather-types"),

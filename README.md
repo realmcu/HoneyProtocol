@@ -9,13 +9,14 @@
 
 第 3 章 L2 Command 详解的页面都在 `docs/protocol/`。**在线 HTML 为对外规范**；工作簿 Excel 仅辅助未迁移命令的编辑，不必与 RST 同步。
 
-- **RST 源**（如 `0x05`）：直接编辑对应 `.rst`，登记在 `tools/sync_protocol.py` 的 `RST_SOURCED_DOCUMENTS`。
-- **工作簿源**（如 `0x02`～`0x04`、`0x11`…）：改 `docs/assets/protocol/cavo-realtek-watch-protocol.xlsx` 后由同步脚本生成 `.rst`。
+- **HoneyBox MD → RST**（`0x02`～`0x05`、`0x0A`、`0x11`～`0x13`）：在 `HoneyBox/docs/ws-protocol-*.md` 定稿后运行 `python tools/import_ws_protocol_md.py`，生成 `docs/protocol/*.rst`（登记在 `RST_SOURCED_DOCUMENTS`）。
+- **工作簿源**：天气类型、语言编码等附录表，改 `docs/assets/protocol/cavo-realtek-watch-protocol.xlsx` 后由 `sync_protocol.py` 生成。
 - **仅手写**：登记在 `MANUAL_DOCUMENTS` 中。
 
-索引页 `docs/protocol/index.rst` 由同步脚本生成。更新 Excel、`RST_SOURCED_DOCUMENTS` 或 `MANUAL_DOCUMENTS` 后执行：
+索引页 `docs/protocol/index.rst` 由同步脚本生成。更新 HoneyBox 协议 md 或 Excel 后执行：
 
 ```bash
+python tools/import_ws_protocol_md.py
 python tools/sync_protocol.py
 python tools/sync_protocol.py --check
 ```
