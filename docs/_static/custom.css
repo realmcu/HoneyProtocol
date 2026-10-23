@@ -4,7 +4,7 @@ body {
 }
 
 .wy-nav-content {
-  max-width: 1180px;
+  max-width: min(96vw, 90rem);
 }
 
 .wy-menu-vertical a {
@@ -54,7 +54,9 @@ body {
 }
 
 .wy-table-responsive table td,
-.wy-table-responsive table th {
+.wy-table-responsive table th,
+.table-wrapper table td,
+.table-wrapper table th {
   white-space: normal;
   vertical-align: middle;
   overflow-wrap: anywhere;
@@ -62,9 +64,10 @@ body {
 
 .rst-content table.docutils {
   width: 100%;
-  margin: 0;
-  border: 1px solid #cfd7e3;
+  margin: 0 0 1rem;
+  border: 1px solid #b8c6d9;
   border-collapse: collapse;
+  box-shadow: 0 1px 2px rgba(23, 54, 93, 0.06);
   font-size: 13px;
   line-height: 1.55;
 }
@@ -110,6 +113,84 @@ body {
   font-size: 0.95rem;
   font-style: normal;
   font-weight: 600;
+}
+
+.rst-content table.protocol-table.command-detail {
+  table-layout: fixed;
+  width: 100%;
+}
+
+.rst-content table.protocol-table.command-detail th:nth-child(1),
+.rst-content table.protocol-table.command-detail td:nth-child(1),
+.rst-content table.protocol-table.command-detail th:nth-child(2),
+.rst-content table.protocol-table.command-detail td:nth-child(2) {
+  overflow-wrap: normal;
+  white-space: nowrap;
+  word-break: keep-all;
+}
+
+.rst-content table.protocol-table.command-detail th:nth-child(3),
+.rst-content table.protocol-table.command-detail td:nth-child(3) {
+  min-width: 9em;
+  overflow-wrap: anywhere;
+  vertical-align: top;
+  white-space: normal;
+  word-break: normal;
+}
+
+.rst-content table.protocol-table.command-detail th:nth-child(4),
+.rst-content table.protocol-table.command-detail td:nth-child(4) {
+  min-width: 6.5em;
+  max-width: 8.5em;
+  overflow-wrap: normal;
+  vertical-align: top;
+  white-space: nowrap;
+  word-break: keep-all;
+}
+
+.rst-content table.protocol-table.command-detail th:nth-child(5),
+.rst-content table.protocol-table.command-detail td:nth-child(5) {
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+  font-size: 0.82rem;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+  vertical-align: top;
+  white-space: normal;
+  word-break: break-all;
+}
+
+.rst-content table.protocol-table.command-detail th:nth-child(6),
+.rst-content table.protocol-table.command-detail td:nth-child(6) {
+  min-width: 10rem;
+  overflow-wrap: anywhere;
+  vertical-align: top;
+  white-space: normal;
+}
+
+.rst-content table.protocol-table.command-detail code.literal {
+  background: transparent;
+  border: 0;
+  color: #1f4e78;
+  font-size: inherit;
+  padding: 0;
+}
+
+.rst-content table.protocol-table.key-interaction th:nth-child(1),
+.rst-content table.protocol-table.key-interaction td:nth-child(1),
+.rst-content table.protocol-table.key-interaction th:nth-child(2),
+.rst-content table.protocol-table.key-interaction td:nth-child(2) {
+  overflow-wrap: normal;
+  white-space: nowrap;
+  word-break: keep-all;
+}
+
+.rst-content table.protocol-table.key-interaction td:nth-child(1) {
+  font-weight: 600;
+}
+
+.rst-content table.protocol-table.key-interaction td:nth-child(2) {
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+  font-size: 0.86rem;
 }
 
 .rst-content table.docutils > caption .caption-text {
@@ -478,6 +559,7 @@ body {
 }
 
 @media screen and (max-width: 767px) {
+  .bd-main .bd-content,
   .wy-nav-content {
     padding: 1.25rem;
   }
@@ -497,7 +579,8 @@ body {
     font-size: 1rem;
   }
 
-  .rst-content .wy-table-responsive {
+  .rst-content .wy-table-responsive,
+  .rst-content .table-wrapper {
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
   }

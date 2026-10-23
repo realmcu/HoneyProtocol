@@ -2,7 +2,16 @@ import unittest
 
 from openpyxl import load_workbook
 
-from tools.sync_protocol import DOCUMENTS, MANUAL_DOCUMENTS, OUTPUT_DIR, ROOT, SOURCE, build_outputs, heading
+from tools.sync_protocol import (
+    DOCUMENTS,
+    MANUAL_DOCUMENTS,
+    OUTPUT_DIR,
+    ROOT,
+    RST_SOURCED_DOCUMENTS,
+    SOURCE,
+    build_outputs,
+    heading,
+)
 
 
 MANUAL_COMMANDS = (
@@ -23,7 +32,10 @@ class ProtocolRenderingTests(unittest.TestCase):
 
     @classmethod
     def page(cls, name):
-        return cls.outputs[OUTPUT_DIR / name]
+        path = OUTPUT_DIR / name
+        if path in cls.outputs:
+            return cls.outputs[path]
+        return path.read_text(encoding="utf-8")
 
     def test_opening_sections_are_not_dropped(self):
         for name in ("0x02-settings.rst", "0x03-bind.rst"):
@@ -49,8 +61,18 @@ class ProtocolRenderingTests(unittest.TestCase):
                 self.assertRegex(page, r"\n具体命令\n-+\n")
                 self.assertNotRegex(page, r"(?m)^1\.\d+ .+\n~+")
                 self.assertNotRegex(page, r"(?m)^\d+\. 通用说明\n-+")
-        for name in ("0x03-bind.rst", "0x04-notification.rst", "0x05-data.rst"):
-            self.assertRegex(self.page(name), r"\n消息定义\n-+\n")
+        for name in (
+            "0x03-bind.rst",
+            "0x04-notification.rst",
+            "0x05-data.rst",
+            "0x0a-log.rst",
+            "0x11-measurement.rst",
+            "0x12-simulator.rst",
+            "0x13-audio.rst",
+        ):
+            self.assertRegex(self.page(name), r"\n规则\n-+\n")
+        self.assertIn("key-interaction", self.page("0x04-notification.rst"))
+        self.assertIn("key-interaction", self.page("0x11-measurement.rst"))
 
     def test_generated_chapters_do_not_show_source_metadata(self):
         for document in DOCUMENTS:
@@ -58,6 +80,13 @@ class ProtocolRenderingTests(unittest.TestCase):
                 page = self.page(document.filename)
                 self.assertNotIn("container:: doc-meta", page)
                 self.assertNotIn("工作表（自动同步）", page)
+
+    def test_rst_sourced_command_index_lists_rst_origin(self):
+        index = self.page("index.rst")
+        self.assertIn("``0x05``", index)
+        self.assertIn("第一版本", index)
+        self.assertIn("RST", index)
+        self.assertIn("0x05-data.rst", self.manifest["rst_sourced"])
 
     def test_manual_key_details_are_nested_under_chapters(self):
         for name in MANUAL_COMMANDS:
@@ -114,16 +143,28 @@ class ProtocolRenderingTests(unittest.TestCase):
 
     def test_internal_section_references_follow_renamed_headings(self):
         data = self.page("0x05-data.rst")
-        self.assertIn("筛选条件（0x01、0x03 共用）", data)
-        self.assertIn(":ref:`筛选条件（0x01、0x03 共用） <cmd-05-section-1-4>`", data)
-        self.assertIn("见 :ref:`具体命令 <cmd-05-section-1-9>`", data)
+        self.assertIn("见 :ref:`具体命令 <cmd-05-section-3>`", data)
         bind = self.page("0x03-bind.rst")
-        self.assertIn("见 :ref:`消息定义 <cmd-03-section-2>`", bind)
+        self.assertIn("见 :ref:`规则 <cmd-03-section-2>`", bind)
         self.assertNotIn('见"二、消息定义"', bind)
         settings = self.page("0x02-settings.rst")
         self.assertIn("见 :ref:`操作码 <cmd-02-section-2>`", settings)
         for name in ("0x04-notification.rst", "0x05-data.rst", "0x11-measurement.rst"):
             self.assertNotIn("见:ref:", self.page(name))
+        # Every section anchor must be referenced with a :ref: rather than a
+        # hard-coded section number, which the toctree numbering does not honour.
+        for name in (
+            "0x02-settings.rst",
+            "0x03-bind.rst",
+            "0x04-notification.rst",
+            "0x05-data.rst",
+            "0x0a-log.rst",
+            "0x11-measurement.rst",
+            "0x12-simulator.rst",
+            "0x13-audio.rst",
+        ):
+            with self.subTest(name=name):
+                self.assertNotRegex(self.page(name), r"见第\s*\d+(?:～\d+)?\s*节")
 
     def test_packet_examples_are_tables_even_when_source_lines_join(self):
         for name in (
@@ -137,9 +178,9 @@ class ProtocolRenderingTests(unittest.TestCase):
             "0x13-audio.rst",
         ):
             with self.subTest(name=name):
-                self.assertIn(".. list-table:: 示例：", self.page(name))
+                self.assertIn(".. list-table:: 协议数据示例", self.page(name))
         bind = self.page("0x03-bind.rst")
-        self.assertIn("   * - ``03 00``\n     - ``04``\n     - ``00 01``\n     - ``00``", bind)
+        self.assertIn("   * - 0x02\n     - 绑定返回", bind)
         self.assertNotIn("Value03 00", bind)
         self.assertNotIn("操作数据02 00", self.page("0x02-settings.rst"))
 
@@ -235,10 +276,17 @@ class ProtocolRenderingTests(unittest.TestCase):
         self.assertIn(".. list-table:: state 状态码\n", wifi)
         self.assertIn(".. list-table:: error 错误码（state=0x03）\n", wifi)
 
-        data = self.page("0x05-data.rst")
-        self.assertIn(".. list-table:: 筛选结果示例\n", data)
-        self.assertIn(".. list-table:: 0x0C / 0x0D 设置（7B", data)
-        self.assertIn(".. list-table:: 0x0B 今日数据（版本 1，24B）\n", data)
+        for name, caption in (
+            ("0x02-settings.rst", ".. list-table:: 操作码定义\n"),
+            ("0x03-bind.rst", ".. list-table:: 协议数据示例\n"),
+            ("0x04-notification.rst", ".. list-table:: Key 分组\n"),
+            ("0x0a-log.rst", ".. list-table:: L2 命令格式\n"),
+            ("0x11-measurement.rst", ".. list-table:: Key 分组\n"),
+            ("0x12-simulator.rst", ".. list-table:: 生成规则（按类型）\n"),
+            ("0x13-audio.rst", ".. list-table:: 协议数据示例\n"),
+        ):
+            with self.subTest(name=name):
+                self.assertIn(caption, self.page(name))
 
     def test_table_captions_use_numbered_upright_style(self):
         config = (ROOT / "docs/conf.py").read_text(encoding="utf-8")
@@ -321,11 +369,24 @@ class ProtocolRenderingTests(unittest.TestCase):
 
     def test_flow_diagrams_and_references_render(self):
         data = self.page("0x05-data.rst")
-        self.assertIn(".. code-block:: text\n\n   手机 手表", data)
         self.assertIn(":doc:`点测命令 <0x11-measurement>`", data)
-        self.assertIn(":doc:`语言编码 <language-codes>`", self.page("0x02-settings.rst"))
+        self.assertIn("同步全部", data)
+        self.assertIn(":doc:`天气类型 <weather-types>`", self.page("0x02-settings.rst"))
         for name in ("0x04-notification.rst", "0x05-data.rst", "0x11-measurement.rst"):
             self.assertNotIn("ws-protocol-", self.page(name))
+        # A role wrapped in literal markup renders verbatim instead of linking.
+        for name in (
+            "0x02-settings.rst",
+            "0x03-bind.rst",
+            "0x04-notification.rst",
+            "0x05-data.rst",
+            "0x0a-log.rst",
+            "0x11-measurement.rst",
+            "0x12-simulator.rst",
+            "0x13-audio.rst",
+        ):
+            with self.subTest(name=name):
+                self.assertNotIn("``:doc:", self.page(name))
 
     def test_protocol_docs_do_not_compare_against_legacy_protocols(self):
         document_paths = set(self.outputs) | set(OUTPUT_DIR.glob("*.rst"))
@@ -352,13 +413,27 @@ class ProtocolRenderingTests(unittest.TestCase):
                         with self.subTest(sheet=worksheet.title, cell=cell.coordinate, marker=marker):
                             self.assertNotIn(marker, cell.value)
 
-    def test_missing_source_sheets_are_disclosed(self):
+    def test_rst_sourced_pages_no_longer_reference_workbook_sheets(self):
+        # 0x02～0x05、0x0A、0x11～0x13 now come from HoneyBox markdown, so the
+        # workbook no longer has to carry the sheets those pages used to cite.
         missing = self.manifest["checks"]["missing_referenced_sheets"]
-        self.assertIn("数据类型", missing)
-        self.assertNotIn("语言编码", missing)
+        self.assertEqual(missing, {})
+        self.assertEqual(self.manifest["checks"]["formula_errors"], [])
         index = self.page("index.rst")
-        self.assertIn(".. warning::", index)
-        self.assertIn("``数据类型``", index)
+        self.assertNotIn(".. warning::", index)
+        self.assertEqual(
+            self.manifest["rst_sourced"],
+            [
+                "0x02-settings.rst",
+                "0x03-bind.rst",
+                "0x04-notification.rst",
+                "0x05-data.rst",
+                "0x0a-log.rst",
+                "0x11-measurement.rst",
+                "0x12-simulator.rst",
+                "0x13-audio.rst",
+            ],
+        )
 
     def test_admonitions_do_not_repeat_manual_titles(self):
         document_paths = set(self.outputs) | set(OUTPUT_DIR.glob("*.rst"))

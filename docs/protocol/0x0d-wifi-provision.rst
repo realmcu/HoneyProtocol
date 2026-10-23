@@ -122,7 +122,7 @@ WiFi 配网命令允许 App 通过已建立的 BLE 连接将 WiFi 凭据（SSID/
 
 .. note::
 
-   设备收到此命令后应立即回复当前配网状态（``WIFI_STATUS``），即使状态仍为 idle。
+   设备收到此命令后应立即回复当前配网状态（``WIFI_STATUS``\ ），即使状态仍为 idle。
 
 0x04 — WIFI_STATUS
 ~~~~~~~~~~~~~~~~~~
