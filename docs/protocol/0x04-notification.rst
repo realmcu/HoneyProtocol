@@ -305,7 +305,7 @@
 .. _cmd-04-section-4:
 
 应用类型
---------
+~~~~~~~~
 
 .. list-table:: 应用类型
    :header-rows: 1

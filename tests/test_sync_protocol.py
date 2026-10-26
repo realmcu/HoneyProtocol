@@ -93,10 +93,39 @@ class ProtocolRenderingTests(unittest.TestCase):
             with self.subTest(name=name):
                 page = (OUTPUT_DIR / name).read_text(encoding="utf-8")
                 self.assertTrue(page.startswith(":tocdepth: 2\n\n"))
-                self.assertRegex(page, r"\n消息定义\n-+\n")
-                self.assertRegex(page, r"\n具体命令\n-+\n\n0x")
+                self.assertRegex(page, r"\n规则\n-+\n")
+                self.assertRegex(page, r"\n具体命令\n-+\n")
                 self.assertNotRegex(page, r"(?m)^0x[\da-fA-F/]+ — .+\n-+")
-        self.assertRegex((OUTPUT_DIR / "0x08-dump-stack.rst").read_text(), r"\n消息定义\n-+\n")
+        self.assertIn(".. table:: 消息定义", (OUTPUT_DIR / "0x08-dump-stack.rst").read_text())
+
+    def test_firmware_upgrade_starts_with_command_format(self):
+        page = (OUTPUT_DIR / "0x01-firmware-upgrade.rst").read_text(encoding="utf-8")
+        self.assertIn("命令格式\n--------\n", page)
+        self.assertIn(".. list-table:: L2 命令格式\n", page)
+        command_format = page.index("命令格式\n--------")
+        rules = page.index("规则\n----")
+        concrete_commands = page.index("具体命令\n--------")
+        self.assertLess(command_format, rules)
+        self.assertLess(rules, concrete_commands)
+        self.assertIn("   * - Length\n     - 2B\n     - Value 字节数\n     - Big-Endian", page)
+
+    def test_all_command_pages_share_the_same_section_skeleton(self):
+        expected = ["命令格式", "规则", "具体命令"]
+        for path in sorted(OUTPUT_DIR.glob("0x*.rst")):
+            lines = path.read_text(encoding="utf-8").splitlines()
+            sections = []
+            for index in range(len(lines) - 1):
+                title = lines[index].strip()
+                underline = lines[index + 1].strip()
+                if (
+                    title
+                    and not title.startswith("*")
+                    and len(underline) >= 3
+                    and set(underline) == {"-"}
+                ):
+                    sections.append(title)
+            with self.subTest(path=path.name):
+                self.assertEqual(sections, expected)
 
     def test_tocdepth_precedes_title_on_every_command_page(self):
         generated = {document.filename for document in DOCUMENTS if document.command}
@@ -148,7 +177,7 @@ class ProtocolRenderingTests(unittest.TestCase):
         self.assertIn("见 :ref:`规则 <cmd-03-section-2>`", bind)
         self.assertNotIn('见"二、消息定义"', bind)
         settings = self.page("0x02-settings.rst")
-        self.assertIn("见 :ref:`操作码 <cmd-02-section-2>`", settings)
+        self.assertIn("见 :ref:`规则 <cmd-02-section-2>`", settings)
         for name in ("0x04-notification.rst", "0x05-data.rst", "0x11-measurement.rst"):
             self.assertNotIn("见:ref:", self.page(name))
         # Every section anchor must be referenced with a :ref: rather than a

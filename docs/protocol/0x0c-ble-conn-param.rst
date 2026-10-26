@@ -3,8 +3,37 @@
 0x0C BLE 连接参数命令
 =====================
 
-消息定义
+命令格式
 --------
+
+.. list-table:: L2 命令格式
+   :header-rows: 1
+   :widths: 18 10 18 54
+   :class: protocol-table command-format columns-4
+
+   * - 字段
+     - 长度
+     - 取值
+     - 说明
+   * - Header
+     - 2B
+     - 0C 00
+     - ``0C 00`` = Command 0x0C，Version 0
+   * - Key
+     - 1B
+     - 见规则
+     - 请求与响应各一个 Key
+   * - Length
+     - 2B
+     - Value 字节数
+     - Big-Endian
+   * - Value
+     - 可变
+     - 见具体命令
+     - 请求为空，响应 7B
+
+规则
+----
 
 .. table:: 消息定义
 

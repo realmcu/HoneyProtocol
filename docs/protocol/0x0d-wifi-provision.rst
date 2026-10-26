@@ -3,13 +3,42 @@
 0x0D WiFi 配网命令
 ==================
 
-概述
+命令格式
+--------
+
+.. list-table:: L2 命令格式
+   :header-rows: 1
+   :widths: 18 10 18 54
+   :class: protocol-table command-format columns-4
+
+   * - 字段
+     - 长度
+     - 取值
+     - 说明
+   * - Header
+     - 2B
+     - 0D 00
+     - ``0D 00`` = Command 0x0D，Version 0
+   * - Key
+     - 1B
+     - 见规则
+     - 配网请求、确认与状态各一个 Key
+   * - Length
+     - 2B
+     - Value 字节数
+     - Big-Endian
+   * - Value
+     - 可变
+     - 见具体命令
+     - 各 Key 独立定义
+
+规则
 ----
 
 WiFi 配网命令允许 App 通过已建立的 BLE 连接将 WiFi 凭据（SSID/密码）下发给设备，监听配网状态，配网成功后获取设备 TCP 服务的 IP 和端口，用于后续切换至 WiFi 传输通道。
 
 交互流程
---------
+~~~~~~~~
 
 .. mermaid::
 
@@ -31,7 +60,7 @@ WiFi 配网命令允许 App 通过已建立的 BLE 连接将 WiFi 凭据（SSID/
 -  设备连接成功后在 ``WIFI_STATUS`` 中携带 IP 和 TCP 端口，App 可随即发起 TCP 连接。
 
 消息定义
---------
+~~~~~~~~
 
 .. table:: 消息定义
 
