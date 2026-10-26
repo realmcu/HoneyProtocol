@@ -51,4 +51,20 @@
 具体命令
 --------
 
-本版本暂无协议数据示例。
+.. list-table:: 协议数据示例
+   :header-rows: 1
+   :widths: 5 12 14 10 15 44
+   :class: protocol-table command-detail columns-6
+
+   * - Key
+     - 名称
+     - 用途
+     - 方向
+     - 具体的命令
+     - 数据说明
+   * - —
+     - 尚未实现
+     - —
+     - —
+     - —
+     - 本版本暂无协议数据示例

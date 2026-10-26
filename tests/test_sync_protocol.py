@@ -127,6 +127,21 @@ class ProtocolRenderingTests(unittest.TestCase):
             with self.subTest(path=path.name):
                 self.assertEqual(sections, expected)
 
+    def test_concrete_command_sections_use_protocol_example_template(self):
+        headers = ("Key", "名称", "用途", "方向", "具体的命令", "数据说明")
+        for path in sorted(OUTPUT_DIR.glob("0x*.rst")):
+            text = path.read_text(encoding="utf-8")
+            section = text.split("具体命令\n--------", 1)[1]
+            with self.subTest(path=path.name):
+                self.assertIn(":widths: 5 12 14 10 15 44", section)
+                self.assertIn(":class: protocol-table command-detail columns-6", section)
+                header_block = section.split("   * - ", 1)[1].split("\n   * - ", 1)[0]
+                header_values = [
+                    line.removeprefix("     - ") if line.startswith("     - ") else line.strip()
+                    for line in header_block.splitlines()
+                ]
+                self.assertEqual(tuple(header_values), headers)
+
     def test_tocdepth_precedes_title_on_every_command_page(self):
         generated = {document.filename for document in DOCUMENTS if document.command}
         filenames = sorted(generated)

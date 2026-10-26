@@ -106,12 +106,12 @@
 
 .. list-table:: 协议数据示例
    :header-rows: 1
-   :widths: 5 8 16 9 14 48
+   :widths: 5 12 14 10 15 44
    :class: protocol-table command-detail columns-6
 
-   * - KeyID
-     - 功能名称
-     - 支持的功能
+   * - Key
+     - 名称
+     - 用途
      - 方向
      - 具体的命令
      - 数据说明

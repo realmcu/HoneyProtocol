@@ -105,6 +105,16 @@ body {
   white-space: nowrap;
 }
 
+.rst-content table.command-detail {
+  table-layout: fixed;
+}
+
+.rst-content table.command-detail th,
+.rst-content table.command-detail td {
+  overflow-wrap: anywhere;
+  word-break: normal;
+}
+
 .rst-content table.docutils > caption {
   caption-side: top;
   padding: 0.6rem 0.75rem;
@@ -121,12 +131,18 @@ body {
 }
 
 .rst-content table.protocol-table.command-detail th:nth-child(1),
-.rst-content table.protocol-table.command-detail td:nth-child(1),
-.rst-content table.protocol-table.command-detail th:nth-child(2),
-.rst-content table.protocol-table.command-detail td:nth-child(2) {
+.rst-content table.protocol-table.command-detail td:nth-child(1) {
   overflow-wrap: normal;
   white-space: nowrap;
   word-break: keep-all;
+}
+
+.rst-content table.protocol-table.command-detail th:nth-child(2),
+.rst-content table.protocol-table.command-detail td:nth-child(2) {
+  overflow-wrap: anywhere;
+  vertical-align: top;
+  white-space: normal;
+  word-break: normal;
 }
 
 .rst-content table.protocol-table.command-detail th:nth-child(3),
@@ -142,10 +158,10 @@ body {
 .rst-content table.protocol-table.command-detail td:nth-child(4) {
   min-width: 6.5em;
   max-width: 8.5em;
-  overflow-wrap: normal;
+  overflow-wrap: anywhere;
   vertical-align: top;
-  white-space: nowrap;
-  word-break: keep-all;
+  white-space: normal;
+  word-break: normal;
 }
 
 .rst-content table.protocol-table.command-detail th:nth-child(5),
