@@ -154,17 +154,9 @@ class ProtocolRenderingTests(unittest.TestCase):
                 self.assertNotIn("L2 版本号", page)
 
     def test_command_field_uses_length_name(self):
-        generated = {document.filename for document in DOCUMENTS if document.command}
-        filenames = sorted(generated)
-        filenames.extend(filename for filename, _, _ in MANUAL_DOCUMENTS)
-        for name in filenames:
-            with self.subTest(name=name):
-                page = (
-                    self.page(name)
-                    if name in generated
-                    else (OUTPUT_DIR / name).read_text(encoding="utf-8")
-                )
-                self.assertNotIn("v-length", page)
+        for path in sorted(OUTPUT_DIR.glob("0x*.rst")):
+            with self.subTest(path=path.name):
+                self.assertNotIn("v-length", path.read_text(encoding="utf-8"))
         for name in ("architecture.rst", "conventions.rst"):
             with self.subTest(name=name):
                 page = (ROOT / "docs" / name).read_text(encoding="utf-8")

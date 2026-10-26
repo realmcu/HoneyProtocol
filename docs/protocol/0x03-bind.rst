@@ -29,7 +29,7 @@
      - 1B
      - —
      - 见 :ref:`规则 <cmd-03-section-2>`
-   * - v-length
+   * - Length
      - 2B
      - —
      - Value 字节数（大端）
