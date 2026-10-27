@@ -55,9 +55,9 @@ WiFi 配网命令允许 App 通过已建立的 BLE 连接将 WiFi 凭据（SSID/
            Device-->>App: WIFI_STATUS (0x04)<br/>返回当前状态
        end
 
--  App 收到 ``WIFI_CONFIG_ACK`` 后启动 30s 状态超时定时器；
--  超时后发送一次 ``WIFI_STATUS_REQ`` 主动查询，再等 10s；仍无响应则判定配网失败；
--  设备连接成功后在 ``WIFI_STATUS`` 中携带 IP 和 TCP 端口，App 可随即发起 TCP 连接。
+1. App 收到 ``WIFI_CONFIG_ACK`` 后启动 30s 状态超时定时器。
+2. 超时后发送一次 ``WIFI_STATUS_REQ`` 主动查询，再等 10s；仍无响应则判定配网失败。
+3. 设备连接成功后在 ``WIFI_STATUS`` 中携带 IP 和 TCP 端口，App 可随即发起 TCP 连接。
 
 .. table:: WIFI_CONFIG_SET 数据字段
 

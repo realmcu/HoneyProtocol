@@ -35,8 +35,8 @@
 规则
 ----
 
-* 设备仅在收到 ``0x01`` 请求后进入固件升级模式。
-* ``0x02`` 的 Value 固定为 Status 1 byte + Error 1 byte；Error 仅在 Status = ``0x01`` 时有效。
+1. 设备仅在收到 ``0x01`` 请求后进入固件升级模式。
+2. ``0x02`` 的 Value 固定为 Status 1 byte + Error 1 byte；Error 仅在 Status = ``0x01`` 时有效。
 
 具体命令
 --------

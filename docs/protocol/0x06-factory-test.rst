@@ -35,10 +35,10 @@
 规则
 ----
 
-* 每个 Key 对应一条测试命令，请求与返回使用成对 Key。
-* 多字节整数与时间戳均使用 Big-Endian；时间戳为 4 bytes 墙上时钟秒。
-* SN 与测试模式 token 固定 32 bytes，test flag 固定 1 byte。
-* Sensor 返回 X / Y / Z 三个有符号 16-bit 值；按键事件固定 8 bytes。
+1. 每个 Key 对应一条测试命令，请求与返回使用成对 Key。
+2. 多字节整数与时间戳均使用 Big-Endian；时间戳为 4 bytes 墙上时钟秒。
+3. SN 与测试模式 token 固定 32 bytes，test flag 固定 1 byte。
+4. Sensor 返回 X / Y / Z 三个有符号 16-bit 值；按键事件固定 8 bytes。
 
 具体命令
 --------

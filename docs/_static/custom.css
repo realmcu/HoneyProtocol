@@ -1,6 +1,53 @@
+:root {
+  --doc-font-sans: "Source Han Sans SC", "Noto Sans CJK SC", "Noto Sans SC",
+    "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei",
+    "WenQuanYi Micro Hei", sans-serif;
+  --doc-font-mono: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+  --doc-text: #293c4f;
+  --doc-reading-width: 48rem;
+}
+
 body {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
-    "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans SC", sans-serif;
+  color: var(--doc-text);
+  font-family: var(--doc-font-sans);
+  font-size: 16px;
+  line-height: 1.7;
+  text-rendering: optimizeLegibility;
+}
+
+.rst-content {
+  color: var(--doc-text);
+  font-size: 17px;
+  line-height: 1.75;
+}
+
+.rst-content p {
+  max-width: var(--doc-reading-width);
+  margin-bottom: 1.25rem;
+  line-height: 1.75;
+}
+
+.rst-content .section ul,
+.rst-content .section ol {
+  max-width: var(--doc-reading-width);
+  margin-top: 0.35rem;
+  margin-bottom: 1.5rem;
+  padding-left: 1.6rem;
+}
+
+.rst-content li {
+  margin-bottom: 0.5rem;
+  line-height: 1.75;
+}
+
+.rst-content li > p {
+  margin-bottom: 0.5rem;
+}
+
+.rst-content code,
+.rst-content kbd,
+.rst-content pre {
+  font-family: var(--doc-font-mono);
 }
 
 .wy-nav-content {
@@ -8,6 +55,7 @@ body {
 }
 
 .wy-menu-vertical a {
+  font-family: var(--doc-font-sans);
   line-height: 1.4;
   overflow-wrap: anywhere;
 }
@@ -21,7 +69,7 @@ body {
 }
 
 .rst-content h2 {
-  margin: 2.4rem 0 1.05rem;
+  margin: 2.75rem 0 1.15rem;
   padding: 0.52rem 0.85rem 0.52rem 1rem;
   color: #173f5f;
   background: #edf4f8;
@@ -33,7 +81,7 @@ body {
 }
 
 .rst-content h3 {
-  margin: 1.65rem 0 0.7rem;
+  margin: 1.9rem 0 0.8rem;
   padding-left: 0.58rem;
   color: #2b506c;
   border-left: 2px solid #bfd2df;
@@ -68,7 +116,7 @@ body {
   border: 1px solid #b8c6d9;
   border-collapse: collapse;
   box-shadow: 0 1px 2px rgba(23, 54, 93, 0.06);
-  font-size: 13px;
+  font-size: 14px;
   line-height: 1.55;
 }
 
@@ -580,17 +628,41 @@ body {
     padding: 1.25rem;
   }
 
+  .rst-content {
+    font-size: 16px;
+    line-height: 1.72;
+  }
+
+  .rst-content p,
+  .rst-content li {
+    line-height: 1.72;
+  }
+
+  .rst-content p {
+    margin-bottom: 1.15rem;
+  }
+
+  .rst-content li {
+    margin-bottom: 0.45rem;
+  }
+
+  .rst-content .section ul,
+  .rst-content .section ol {
+    margin-bottom: 1.35rem;
+  }
+
   .rst-content h1 {
     font-size: 1.7rem;
   }
 
   .rst-content h2 {
-    margin-top: 2rem;
+    margin-top: 2.25rem;
     padding: 0.48rem 0.65rem 0.48rem 0.75rem;
     font-size: 1.25rem;
   }
 
   .rst-content h3 {
+    margin-top: 1.65rem;
     padding-left: 0.5rem;
     font-size: 1rem;
   }

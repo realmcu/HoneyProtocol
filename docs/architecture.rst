@@ -101,9 +101,9 @@ BLE UART Profile
 说明
 ~~~~
 
--  **Device 端（Master）**\ ：实现 UART Profile，提供 write + read 两个 characteristic
--  **Phone 端（Slave）**\ ：基于 character operation 实现 write interface 和 receive interface
--  Phone 端 receive 基于 **notify** 模式；Device 端 receive 基于 **write character**\ （push 方式，非 pull）
+1. **Device 端（Master）**\ ：实现 UART Profile，提供 write + read 两个 characteristic。
+2. **Phone 端（Slave）**\ ：基于 character operation 实现 write interface 和 receive interface。
+3. Phone 端 receive 基于 **notify** 模式；Device 端 receive 基于 **write character**\ （push 方式，非 pull）。
 
 .. _l1-transport-layer:
 
@@ -113,11 +113,11 @@ L1 传输层
 功能
 ~~~~
 
--  在 L0 之上实现可靠传输（发送 + 接收）
--  L1 通过拆包/组包支持最大 **65535 bytes** payload（16-bit 长度字段）
--  实现 **ACK 机制**\ ：接收方校验后发送 success/error ACK
--  重传：收到 error ACK 或超时后重发，失败结果上报 L2
--  L1 数据包格式与具体承载解耦，可在 BLE UART Profile、UART、Socket 等链路上复用
+1. 在 L0 之上实现可靠传输（发送 + 接收）。
+2. L1 通过拆包/组包支持最大 **65535 bytes** payload（16-bit 长度字段）。
+3. 实现 **ACK 机制**\ ：接收方校验后发送 success/error ACK。
+4. 重传：收到 error ACK 或超时后重发，失败结果上报 L2。
+5. L1 数据包格式与具体承载解耦，可在 BLE UART Profile、UART、Socket 等链路上复用。
 
 L1 数据包结构
 ~~~~~~~~~~~~~

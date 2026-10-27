@@ -35,8 +35,8 @@
 规则
 ----
 
-* ``0x01`` 请求 Value 为空（Length = 0）。
-* ``0x02`` Value 固定为 7 bytes，多字节字段使用 Big-Endian。
+1. ``0x01`` 请求 Value 为空（Length = 0）。
+2. ``0x02`` Value 固定为 7 bytes，多字节字段使用 Big-Endian。
 
 .. table:: BLE 连接参数返回字段
 

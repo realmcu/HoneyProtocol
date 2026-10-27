@@ -162,6 +162,13 @@ class ProtocolRenderingTests(unittest.TestCase):
                 self.assertNotIn("消息定义", rules)
                 self.assertNotRegex(rules, r"(?m)^0x[\da-fA-F]+ — .+\n~+")
 
+    def test_document_body_lists_use_ordered_numbers(self):
+        for path in (ROOT / "docs").rglob("*.rst"):
+            content = path.read_text(encoding="utf-8")
+            with self.subTest(path=str(path.relative_to(ROOT))):
+                self.assertNotRegex(content, r"(?m)^\*\s+")
+                self.assertNotRegex(content, r"(?m)^-\s+")
+
     def test_tocdepth_precedes_title_on_every_command_page(self):
         generated = {document.filename for document in DOCUMENTS if document.command}
         filenames = sorted(generated)
@@ -403,11 +410,28 @@ class ProtocolRenderingTests(unittest.TestCase):
     def test_heading_hierarchy_is_visually_distinct(self):
         stylesheet = (ROOT / "docs/_static/custom.css").read_text(encoding="utf-8")
         self.assertIn(".rst-content h1 {\n  margin: 0 0 1.4rem;", stylesheet)
-        self.assertIn(".rst-content h2 {\n  margin: 2.4rem 0 1.05rem;", stylesheet)
+        self.assertIn(".rst-content h2 {\n  margin: 2.75rem 0 1.15rem;", stylesheet)
         self.assertIn("border-left: 4px solid #1f6f95;", stylesheet)
         self.assertIn("font-size: 1.48rem;", stylesheet)
-        self.assertIn(".rst-content h3 {\n  margin: 1.65rem 0 0.7rem;", stylesheet)
+        self.assertIn(".rst-content h3 {\n  margin: 1.9rem 0 0.8rem;", stylesheet)
         self.assertIn("font-size: 1.04rem;", stylesheet)
+
+    def test_body_typography_prioritizes_chinese_reading(self):
+        stylesheet = (ROOT / "docs/_static/custom.css").read_text(encoding="utf-8")
+        self.assertIn('"Source Han Sans SC", "Noto Sans CJK SC", "Noto Sans SC"', stylesheet)
+        self.assertIn("--doc-reading-width: 48rem;", stylesheet)
+        self.assertIn(".rst-content {\n  color: var(--doc-text);\n  font-size: 17px;\n  line-height: 1.75;", stylesheet)
+        self.assertIn(".rst-content p {\n  max-width: var(--doc-reading-width);", stylesheet)
+        self.assertIn(
+            ".rst-content .section ul,\n.rst-content .section ol {\n  max-width: var(--doc-reading-width);",
+            stylesheet,
+        )
+        self.assertIn("margin-bottom: 1.25rem;\n  line-height: 1.75;", stylesheet)
+        self.assertIn("margin-top: 0.35rem;\n  margin-bottom: 1.5rem;", stylesheet)
+        self.assertIn("margin-bottom: 0.5rem;\n  line-height: 1.75;", stylesheet)
+        self.assertIn("font-size: 14px;", stylesheet)
+        self.assertIn(".rst-content {\n    font-size: 16px;\n    line-height: 1.72;", stylesheet)
+        self.assertIn(".rst-content p,\n  .rst-content li {\n    line-height: 1.72;", stylesheet)
 
     def test_architecture_stack_uses_structured_protocol_map(self):
         architecture = (ROOT / "docs/architecture.rst").read_text(encoding="utf-8")
