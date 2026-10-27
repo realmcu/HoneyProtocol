@@ -142,6 +142,20 @@ class ProtocolRenderingTests(unittest.TestCase):
                 ]
                 self.assertEqual(tuple(header_values), headers)
 
+    def test_manual_rule_sections_do_not_repeat_command_catalogs(self):
+        for name in (
+            "0x01-firmware-upgrade.rst",
+            "0x06-factory-test.rst",
+            "0x0c-ble-conn-param.rst",
+            "0x0d-wifi-provision.rst",
+            "0x10-file-transfer.rst",
+        ):
+            text = (OUTPUT_DIR / name).read_text(encoding="utf-8")
+            rules = text.split("规则\n----", 1)[1].split("具体命令\n--------", 1)[0]
+            with self.subTest(name=name):
+                self.assertNotIn("消息定义", rules)
+                self.assertNotRegex(rules, r"(?m)^0x[\da-fA-F]+ — .+\n~+")
+
     def test_tocdepth_precedes_title_on_every_command_page(self):
         generated = {document.filename for document in DOCUMENTS if document.command}
         filenames = sorted(generated)
