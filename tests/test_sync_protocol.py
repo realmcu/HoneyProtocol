@@ -128,19 +128,25 @@ class ProtocolRenderingTests(unittest.TestCase):
                 self.assertEqual(sections, expected)
 
     def test_concrete_command_sections_use_protocol_example_template(self):
-        headers = ("Key", "sub-key（操作码）", "名称 / 用途", "方向", "具体的命令", "数据说明")
         for path in sorted(OUTPUT_DIR.glob("0x*.rst")):
             text = path.read_text(encoding="utf-8")
             section = text.split("具体命令\n--------", 1)[1]
+            expected_headers = (
+                ("Key", "opcode", "名称 / 用途", "方向", "具体的命令", "数据说明")
+                if path.name == "0x02-settings.rst"
+                else ("Key", "名称 / 用途", "方向", "具体的命令", "数据说明")
+            )
             with self.subTest(path=path.name):
-                self.assertIn(":widths: 5 10 17 9 15 44", section)
-                self.assertIn(":class: protocol-table command-detail columns-6", section)
+                expected_widths = "5 10 17 9 15 44" if path.name == "0x02-settings.rst" else "5 20 10 15 50"
+                expected_columns = "columns-6" if path.name == "0x02-settings.rst" else "columns-5"
+                self.assertIn(f":widths: {expected_widths}", section)
+                self.assertIn(f":class: protocol-table command-detail {expected_columns}", section)
                 header_block = section.split("   * - ", 1)[1].split("\n   * - ", 1)[0]
                 header_values = [
                     line.removeprefix("     - ") if line.startswith("     - ") else line.strip()
                     for line in header_block.splitlines()
                 ]
-                self.assertEqual(tuple(header_values), headers)
+                self.assertEqual(tuple(header_values), expected_headers)
 
     def test_manual_rule_sections_do_not_repeat_command_catalogs(self):
         for name in (
@@ -230,7 +236,7 @@ class ProtocolRenderingTests(unittest.TestCase):
             with self.subTest(name=name):
                 self.assertIn(".. list-table:: 协议数据示例", self.page(name))
         bind = self.page("0x03-bind.rst")
-        self.assertIn("   * - 0x02\n     - —\n     - 绑定返回 / 绑定结果", bind)
+        self.assertIn("   * - 0x02\n     - 绑定返回 / 绑定结果", bind)
         self.assertNotIn("Value03 00", bind)
         self.assertNotIn("操作数据02 00", self.page("0x02-settings.rst"))
 

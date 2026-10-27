@@ -182,35 +182,30 @@ WiFi 配网命令允许 App 通过已建立的 BLE 连接将 WiFi 凭据（SSID/
 
 .. list-table:: 协议数据示例
    :header-rows: 1
-   :widths: 5 10 17 9 15 44
-   :class: protocol-table command-detail columns-6
+   :widths: 5 20 10 15 50
+   :class: protocol-table command-detail columns-5
 
    * - Key
-     - sub-key（操作码）
      - 名称 / 用途
      - 方向
      - 具体的命令
      - 数据说明
    * - 0x01
-     - —
      - WIFI_CONFIG_SET / 下发 WiFi 凭据
      - App → Device
      - ``0D 00 01 00 0D 00 01 01 04 54 65 73 74 04 31 32 33 34``
      - request_id=1，保存凭据，SSID = ``Test``，密码 = ``1234``
    * - 0x02
-     - —
      - WIFI_CONFIG_ACK / 确认请求
      - Device → App
      - ``0D 00 02 00 04 00 01 00 00``
      - request_id=1，result=00，error=00
    * - 0x03
-     - —
      - WIFI_STATUS_REQ / 查询状态
      - App → Device
      - ``0D 00 03 00 02 00 01``
      - request_id=1
    * - 0x04
-     - —
      - WIFI_STATUS / 上报连接状态
      - Device → App
      - ``0D 00 04 00 14 00 01 02 00 0D 31 39 32 2E 31 36 38 2E 31 2E 31 30 30 22 4F``

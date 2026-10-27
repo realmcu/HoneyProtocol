@@ -42,17 +42,15 @@
 
 .. list-table:: 协议数据示例
    :header-rows: 1
-   :widths: 5 10 17 9 15 44
-   :class: protocol-table command-detail columns-6
+   :widths: 5 20 10 15 50
+   :class: protocol-table command-detail columns-5
 
    * - Key
-     - sub-key（操作码）
      - 名称 / 用途
      - 方向
      - 具体的命令
      - 数据说明
    * - —
-     - —
      - 尚未实现 / 无协议示例
      - —
      - —

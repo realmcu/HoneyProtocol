@@ -43,29 +43,25 @@
 
 .. list-table:: 协议数据示例
    :header-rows: 1
-   :widths: 5 10 17 9 15 44
-   :class: protocol-table command-detail columns-6
+   :widths: 5 20 10 15 50
+   :class: protocol-table command-detail columns-5
 
    * - Key
-     - sub-key（操作码）
      - 名称 / 用途
      - 方向
      - 具体的命令
      - 数据说明
    * - 0x01
-     - —
      - 固件升级请求 / 进入升级模式
      - 手机 → 设备
      - ``01 00 01 00 00``
      - Value 空（Length = 0）
    * - 0x02
-     - —
      - 升级返回 / 升级成功
      - 设备 → 手机
      - ``01 00 02 00 02 00 00``
      - Status = ``00``，Error = ``00``
    * - 0x02
-     - —
      - 升级返回 / OTA 失败
      - 设备 → 手机
      - ``01 00 02 00 02 00 01``

@@ -110,7 +110,7 @@
    :class: protocol-table command-detail columns-6
 
    * - Key
-     - sub-key（操作码）
+     - opcode
      - 名称 / 用途
      - 方向
      - 具体的命令
