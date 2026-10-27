@@ -135,48 +135,48 @@
 
 .. list-table:: 协议数据示例
    :header-rows: 1
-   :widths: 5 12 14 10 15 44
+   :widths: 5 10 17 9 15 44
    :class: protocol-table command-detail columns-6
 
    * - Key
-     - 名称
-     - 用途
+     - sub-key（操作码）
+     - 名称 / 用途
      - 方向
      - 具体的命令
      - 数据说明
    * - 0x01
-     - XFER_BEGIN_REQ
-     - 建立文件会话
+     - —
+     - XFER_BEGIN_REQ / 建立文件会话
      - 手机 → 设备
      - ``10 00 01 00 0D 03 00 00 01 00 08 00 05 61 2E 62 69 6E``
      - 原始数据，总长 256B，块大小 2048B，文件名 = ``a.bin``
    * - 0x02
-     - XFER_BEGIN_RSP
-     - 接受文件会话
+     - —
+     - XFER_BEGIN_RSP / 接受文件会话
      - 设备 → 手机
      - ``10 00 02 00 03 00 08 00``
      - status=00，chunk_size=2048
    * - 0x03
-     - XFER_DATA
-     - 发送数据块
+     - —
+     - XFER_DATA / 发送数据块
      - 手机 → 设备
      - ``10 00 03 00 04 00 00 AA BB``
      - seq=0，数据块 2B
    * - 0x05
-     - XFER_END_REQ
-     - 结束并校验文件
+     - —
+     - XFER_END_REQ / 结束并校验文件
      - 手机 → 设备
      - ``10 00 05 00 04 12 34 56 78``
      - CRC32 = ``0x12345678``
    * - 0x06
-     - XFER_END_RSP
-     - 返回传输结果
+     - —
+     - XFER_END_RSP / 返回传输结果
      - 设备 → 手机
      - ``10 00 06 00 02 00 00``
      - status=00，error_code=00
    * - 0x07
-     - XFER_ABORT
-     - 中止传输
+     - —
+     - XFER_ABORT / 中止传输
      - 双向
      - ``10 00 07 00 01 01``
      - reason=01（传输错误）

@@ -57,24 +57,24 @@
 
 .. list-table:: 协议数据示例
    :header-rows: 1
-   :widths: 5 12 14 10 15 44
+   :widths: 5 10 17 9 15 44
    :class: protocol-table command-detail columns-6
 
    * - Key
-     - 名称
-     - 用途
+     - sub-key（操作码）
+     - 名称 / 用途
      - 方向
      - 具体的命令
      - 数据说明
    * - 0x01
-     - 请求连接参数
-     - 读取当前 BLE 参数
+     - —
+     - 请求连接参数 / 读取当前 BLE 参数
      - 手机 → 设备
      - ``0C 00 01 00 00``
      - Value 空（Length = 0）
    * - 0x02
-     - 返回连接参数
-     - 返回 7B 参数
+     - —
+     - 返回连接参数 / 7B 参数
      - 设备 → 手机
      - ``0C 00 02 00 07 00 18 00 00 01 F4 F7``
      - Interval 30 ms，Latency 0，Timeout 5000 ms，MTU 247

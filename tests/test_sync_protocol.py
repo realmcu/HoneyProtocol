@@ -128,12 +128,12 @@ class ProtocolRenderingTests(unittest.TestCase):
                 self.assertEqual(sections, expected)
 
     def test_concrete_command_sections_use_protocol_example_template(self):
-        headers = ("Key", "名称", "用途", "方向", "具体的命令", "数据说明")
+        headers = ("Key", "sub-key（操作码）", "名称 / 用途", "方向", "具体的命令", "数据说明")
         for path in sorted(OUTPUT_DIR.glob("0x*.rst")):
             text = path.read_text(encoding="utf-8")
             section = text.split("具体命令\n--------", 1)[1]
             with self.subTest(path=path.name):
-                self.assertIn(":widths: 5 12 14 10 15 44", section)
+                self.assertIn(":widths: 5 10 17 9 15 44", section)
                 self.assertIn(":class: protocol-table command-detail columns-6", section)
                 header_block = section.split("   * - ", 1)[1].split("\n   * - ", 1)[0]
                 header_values = [
@@ -230,7 +230,7 @@ class ProtocolRenderingTests(unittest.TestCase):
             with self.subTest(name=name):
                 self.assertIn(".. list-table:: 协议数据示例", self.page(name))
         bind = self.page("0x03-bind.rst")
-        self.assertIn("   * - 0x02\n     - 绑定返回", bind)
+        self.assertIn("   * - 0x02\n     - —\n     - 绑定返回 / 绑定结果", bind)
         self.assertNotIn("Value03 00", bind)
         self.assertNotIn("操作数据02 00", self.page("0x02-settings.rst"))
 
