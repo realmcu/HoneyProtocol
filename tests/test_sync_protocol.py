@@ -148,6 +148,48 @@ class ProtocolRenderingTests(unittest.TestCase):
                 ]
                 self.assertEqual(tuple(header_values), expected_headers)
 
+    def test_command_detail_tables_reserve_space_for_key_column(self):
+        stylesheet = (ROOT / "docs/_static/custom.css").read_text(encoding="utf-8")
+        self.assertIn(
+            ".rst-content table.protocol-table.command-detail td:nth-child(1) {\n"
+            "  overflow-wrap: normal;\n"
+            "  padding-right: 0.5rem;\n"
+            "  padding-left: 0.5rem;\n"
+            "  white-space: normal;",
+            stylesheet,
+        )
+        self.assertIn(
+            ".columns-5 col:first-child {\n  width: 10% !important;",
+            stylesheet,
+        )
+        self.assertIn(
+            ".columns-5 col:nth-child(2) {\n  width: 15% !important;",
+            stylesheet,
+        )
+        self.assertIn(
+            ".columns-6 col:first-child {\n  width: 7% !important;",
+            stylesheet,
+        )
+        self.assertIn(
+            ".columns-6 col:nth-child(3) {\n  width: 15% !important;",
+            stylesheet,
+        )
+        self.assertIn(
+            "@media screen and (max-width: 1279px) {\n"
+            "  .rst-content .wy-table-responsive,\n"
+            "  .rst-content .table-wrapper {\n"
+            "    overflow-x: auto;",
+            stylesheet,
+        )
+        self.assertIn(".columns-5 {\n    min-width: 760px;", stylesheet)
+        self.assertIn(".columns-6 {\n    min-width: 900px;", stylesheet)
+
+    def test_command_detail_tables_use_one_key_per_row(self):
+        for path in sorted(OUTPUT_DIR.glob("0x*.rst")):
+            section = path.read_text(encoding="utf-8").split("具体命令\n--------", 1)[1]
+            with self.subTest(path=path.name):
+                self.assertNotRegex(section, r"(?m)^   \* - 0x[\da-fA-F]{2}\s*/")
+
     def test_manual_rule_sections_do_not_repeat_command_catalogs(self):
         for name in (
             "0x01-firmware-upgrade.rst",

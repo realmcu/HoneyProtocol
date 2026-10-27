@@ -181,8 +181,26 @@ body {
 .rst-content table.protocol-table.command-detail th:nth-child(1),
 .rst-content table.protocol-table.command-detail td:nth-child(1) {
   overflow-wrap: normal;
-  white-space: nowrap;
-  word-break: keep-all;
+  padding-right: 0.5rem;
+  padding-left: 0.5rem;
+  white-space: normal;
+  word-break: normal;
+}
+
+.rst-content table.protocol-table.command-detail.columns-5 col:first-child {
+  width: 10% !important;
+}
+
+.rst-content table.protocol-table.command-detail.columns-5 col:nth-child(2) {
+  width: 15% !important;
+}
+
+.rst-content table.protocol-table.command-detail.columns-6 col:first-child {
+  width: 7% !important;
+}
+
+.rst-content table.protocol-table.command-detail.columns-6 col:nth-child(3) {
+  width: 15% !important;
 }
 
 .rst-content table.protocol-table.command-detail th:nth-child(2),
@@ -622,6 +640,26 @@ body {
   }
 }
 
+@media screen and (max-width: 1279px) {
+  .rst-content .wy-table-responsive,
+  .rst-content .table-wrapper {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .rst-content table.protocol-table.columns-4 {
+    min-width: 620px;
+  }
+
+  .rst-content table.protocol-table.columns-5 {
+    min-width: 760px;
+  }
+
+  .rst-content table.protocol-table.columns-6 {
+    min-width: 900px;
+  }
+}
+
 @media screen and (max-width: 767px) {
   .bd-main .bd-content,
   .wy-nav-content {
@@ -665,24 +703,6 @@ body {
     margin-top: 1.65rem;
     padding-left: 0.5rem;
     font-size: 1rem;
-  }
-
-  .rst-content .wy-table-responsive,
-  .rst-content .table-wrapper {
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-  }
-
-  .rst-content table.protocol-table.columns-4 {
-    min-width: 620px;
-  }
-
-  .rst-content table.protocol-table.columns-5 {
-    min-width: 760px;
-  }
-
-  .rst-content table.protocol-table.columns-6 {
-    min-width: 900px;
   }
 
   .rst-content table.packet-table {
