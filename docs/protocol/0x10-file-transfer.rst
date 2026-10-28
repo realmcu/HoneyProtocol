@@ -94,7 +94,7 @@
 
 .. note::
 
-   L1 可靠传输保证数据块按序到达；设备若检测到序号不连续，应发送 XFER_ABORT（reason=``0x01``\ ）。
+   L1 可靠传输保证数据块按序到达；设备若检测到序号不连续，应发送 XFER_ABORT（reason = ``0x01``\ ）。
 
 .. table:: XFER_END_REQ 数据字段
 
@@ -116,7 +116,7 @@
 
 .. warning::
 
-   设备端收到 ``XFER_END_REQ`` 后解析出 crc32 但 **不做校验**\ （``hmi_l2_cmd_xfer.c`` 中标注 ``TODO: verify crc32``\ ），且无论 FlashDB 写入结果如何都固定回复 ``status=0x00, error_code=0x00``\ 。因此 ``0x01``\ （CRC32 校验失败）与 ``0x02``\ （数据不完整）两个状态码当前**永不出现**\ ，手机端不能依据本响应判断文件完整性。此外 FlashDB BigFile 的创建路径当前被桩化（``app_get_bf()`` 尚未实现），数据实际未落盘。
+   设备端收到 ``XFER_END_REQ`` 后解析出 crc32 但 **不做校验**\ （``hmi_l2_cmd_xfer.c`` 中标注 ``TODO: verify crc32``\ ），且无论 FlashDB 写入结果如何都固定回复 ``status=0x00, error_code=0x00``\ 。因此 ``0x01``\ （CRC32 校验失败）与 ``0x02``\ （数据不完整）两个状态码当前永不出现，手机端不能依据本响应判断文件完整性。此外 FlashDB BigFile 的创建路径当前被桩化（``app_get_bf()`` 尚未实现），数据实际未落盘。
 
 .. table:: XFER_ABORT 数据字段
 
