@@ -27,7 +27,6 @@ html_theme_options = {
 }
 html_static_path = ["_static"]
 html_css_files = ["custom.css"]
-html_extra_path = ["assets"]
 html_show_sourcelink = False
 html_show_sphinx = False
 html_last_updated_fmt = "%Y-%m-%d"

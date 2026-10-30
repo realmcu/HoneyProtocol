@@ -1,6 +1,4 @@
 {
-  "source": "docs/assets/protocol/cavo-realtek-watch-protocol.xlsx",
-  "source_sha256": "d3c5bbd7a2c93e8ebd6a9bb01142257515f46188cefbc7593f43594bd8faf195",
   "rst_sourced": [
     "0x02-settings.rst",
     "0x03-bind.rst",
@@ -11,103 +9,138 @@
     "0x12-simulator.rst",
     "0x13-audio.rst"
   ],
+  "appendix": [
+    "weather-types.rst",
+    "language-codes.rst"
+  ],
+  "manual_commands": [
+    "0x01-firmware-upgrade.rst",
+    "0x06-factory-test.rst",
+    "0x08-dump-stack.rst",
+    "0x09-flash-read.rst",
+    "0x0c-ble-conn-param.rst",
+    "0x0d-wifi-provision.rst",
+    "0x10-file-transfer.rst"
+  ],
   "documents": [
     {
-      "sheet": "天气类型",
-      "filename": "weather-types.rst",
-      "title": "天气类型",
-      "command": null,
-      "status": null,
-      "source": "工作簿",
-      "rows": 29
-    },
-    {
-      "sheet": "语音编码",
-      "filename": "language-codes.rst",
-      "title": "语言编码",
-      "command": null,
-      "status": null,
-      "source": "工作簿",
-      "rows": 105
-    },
-    {
-      "sheet": null,
       "filename": "0x02-settings.rst",
       "title": "0x02 设置命令",
       "command": "02",
       "status": "第一版本",
-      "source": "RST",
-      "rows": null
+      "source": "RST"
     },
     {
-      "sheet": null,
       "filename": "0x03-bind.rst",
       "title": "0x03 绑定命令",
       "command": "03",
       "status": "第一版本",
-      "source": "RST",
-      "rows": null
+      "source": "RST"
     },
     {
-      "sheet": null,
       "filename": "0x04-notification.rst",
       "title": "0x04 通知命令",
       "command": "04",
       "status": "第一版本",
-      "source": "RST",
-      "rows": null
+      "source": "RST"
     },
     {
-      "sheet": null,
       "filename": "0x05-data.rst",
       "title": "0x05 数据命令",
       "command": "05",
       "status": "第一版本",
-      "source": "RST",
-      "rows": null
+      "source": "RST"
     },
     {
-      "sheet": null,
       "filename": "0x0a-log.rst",
       "title": "0x0A 日志命令",
       "command": "0A",
       "status": "第一版本",
-      "source": "RST",
-      "rows": null
+      "source": "RST"
     },
     {
-      "sheet": null,
       "filename": "0x11-measurement.rst",
       "title": "0x11 点测命令",
       "command": "11",
       "status": "第一版本",
-      "source": "RST",
-      "rows": null
+      "source": "RST"
     },
     {
-      "sheet": null,
       "filename": "0x12-simulator.rst",
       "title": "0x12 模拟数据命令",
       "command": "12",
       "status": "第一版本",
-      "source": "RST",
-      "rows": null
+      "source": "RST"
     },
     {
-      "sheet": null,
       "filename": "0x13-audio.rst",
       "title": "0x13 音频命令",
       "command": "13",
       "status": "第一版本",
-      "source": "RST",
-      "rows": null
+      "source": "RST"
+    },
+    {
+      "filename": "0x01-firmware-upgrade.rst",
+      "title": "0x01 固件升级命令",
+      "command": "01",
+      "status": null,
+      "source": "手工维护"
+    },
+    {
+      "filename": "0x06-factory-test.rst",
+      "title": "0x06 工厂测试命令",
+      "command": "06",
+      "status": null,
+      "source": "手工维护"
+    },
+    {
+      "filename": "0x08-dump-stack.rst",
+      "title": "0x08 Dump Stack 命令",
+      "command": "08",
+      "status": null,
+      "source": "手工维护"
+    },
+    {
+      "filename": "0x09-flash-read.rst",
+      "title": "0x09 测试 Flash 读取命令",
+      "command": "09",
+      "status": null,
+      "source": "手工维护"
+    },
+    {
+      "filename": "0x0c-ble-conn-param.rst",
+      "title": "0x0C BLE 连接参数命令",
+      "command": "0C",
+      "status": null,
+      "source": "手工维护"
+    },
+    {
+      "filename": "0x0d-wifi-provision.rst",
+      "title": "0x0D WiFi 配网命令",
+      "command": "0D",
+      "status": null,
+      "source": "手工维护"
+    },
+    {
+      "filename": "0x10-file-transfer.rst",
+      "title": "0x10 文件传输命令",
+      "command": "10",
+      "status": null,
+      "source": "手工维护"
+    },
+    {
+      "filename": "weather-types.rst",
+      "title": "天气类型",
+      "command": null,
+      "status": null,
+      "source": "附表"
+    },
+    {
+      "filename": "language-codes.rst",
+      "title": "语言编码",
+      "command": null,
+      "status": null,
+      "source": "附表"
     }
-  ],
-  "checks": {
-    "complete_command_examples": 0,
-    "formula_count": 0,
-    "formula_errors": [],
-    "missing_referenced_sheets": {},
-    "vlength_errors": []
-  }
+  ]
 }

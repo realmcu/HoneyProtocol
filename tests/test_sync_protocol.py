@@ -1,14 +1,11 @@
 import unittest
 
-from openpyxl import load_workbook
-
 from tools.sync_protocol import (
-    DOCUMENTS,
+    APPENDIX_DOCUMENTS,
     MANUAL_DOCUMENTS,
     OUTPUT_DIR,
     ROOT,
     RST_SOURCED_DOCUMENTS,
-    SOURCE,
     build_outputs,
     heading,
 )
@@ -74,10 +71,10 @@ class ProtocolRenderingTests(unittest.TestCase):
         self.assertIn("key-interaction", self.page("0x04-notification.rst"))
         self.assertIn("key-interaction", self.page("0x11-measurement.rst"))
 
-    def test_generated_chapters_do_not_show_source_metadata(self):
-        for document in DOCUMENTS:
-            with self.subTest(name=document.filename):
-                page = self.page(document.filename)
+    def test_appendix_pages_do_not_show_source_metadata(self):
+        for filename, _ in APPENDIX_DOCUMENTS:
+            with self.subTest(name=filename):
+                page = (OUTPUT_DIR / filename).read_text(encoding="utf-8")
                 self.assertNotIn("container:: doc-meta", page)
                 self.assertNotIn("工作表（自动同步）", page)
 
@@ -212,29 +209,19 @@ class ProtocolRenderingTests(unittest.TestCase):
                 self.assertNotRegex(content, r"(?m)^-\s+")
 
     def test_tocdepth_precedes_title_on_every_command_page(self):
-        generated = {document.filename for document in DOCUMENTS if document.command}
-        filenames = sorted(generated)
+        filenames = [filename for filename, _, _ in RST_SOURCED_DOCUMENTS]
         filenames.extend(filename for filename, _, _ in MANUAL_DOCUMENTS)
         for name in filenames:
             with self.subTest(name=name):
-                page = (
-                    self.page(name)
-                    if name in generated
-                    else (OUTPUT_DIR / name).read_text(encoding="utf-8")
-                )
+                page = (OUTPUT_DIR / name).read_text(encoding="utf-8")
                 self.assertTrue(page.startswith(":tocdepth: 2\n\n0x"), name)
 
     def test_command_pages_do_not_repeat_l2_version(self):
-        generated = {document.filename for document in DOCUMENTS if document.command}
-        filenames = sorted(generated)
+        filenames = [filename for filename, _, _ in RST_SOURCED_DOCUMENTS]
         filenames.extend(filename for filename, _, _ in MANUAL_DOCUMENTS)
         for name in filenames:
             with self.subTest(name=name):
-                page = (
-                    self.page(name)
-                    if name in generated
-                    else (OUTPUT_DIR / name).read_text(encoding="utf-8")
-                )
+                page = (OUTPUT_DIR / name).read_text(encoding="utf-8")
                 self.assertNotIn("L2 版本号", page)
 
     def test_command_field_uses_length_name(self):
@@ -299,16 +286,14 @@ class ProtocolRenderingTests(unittest.TestCase):
         self.assertIn("   * - 取值\n     - 语言\n     - 英文", language)
         self.assertIn("   * - 0x00（0）\n     - 英文\n     - English", language)
 
-    def test_appendix_is_a_separate_chapter_with_workbook_download(self):
+    def test_appendix_is_a_separate_chapter(self):
         root_index = (ROOT / "docs/index.rst").read_text(encoding="utf-8")
         appendix = (ROOT / "docs/appendix.rst").read_text(encoding="utf-8")
         self.assertIn("   protocol/index\n   appendix\n", root_index)
         self.assertTrue(appendix.startswith("附表\n"))
-        self.assertIn(
-            f":download:`协议工作簿（Excel） <assets/protocol/{SOURCE.name}>`",
-            appendix,
-        )
-        self.assertTrue(SOURCE.is_file())
+        self.assertIn("weather-types", appendix)
+        self.assertIn("language-codes", appendix)
+        self.assertNotIn(".xlsx", appendix)
         command_index = self.page("index.rst")
         self.assertNotIn("附表", command_index)
         self.assertNotIn("   weather-types", command_index)
@@ -439,16 +424,6 @@ class ProtocolRenderingTests(unittest.TestCase):
                 with self.subTest(path=str(path.relative_to(ROOT)), phrase=phrase):
                     self.assertNotIn(phrase, content)
 
-        workbook = load_workbook(SOURCE, read_only=True, data_only=False)
-        for worksheet in workbook.worksheets:
-            for row in worksheet.iter_rows():
-                for cell in row:
-                    if not isinstance(cell.value, str):
-                        continue
-                    for phrase in phrases:
-                        with self.subTest(sheet=worksheet.title, cell=cell.coordinate, phrase=phrase):
-                            self.assertNotIn(phrase, cell.value)
-
     def test_heading_hierarchy_is_visually_distinct(self):
         stylesheet = (ROOT / "docs/_static/custom.css").read_text(encoding="utf-8")
         self.assertIn(".rst-content h1 {\n  margin: 0 0 1.4rem;", stylesheet)
@@ -525,24 +500,10 @@ class ProtocolRenderingTests(unittest.TestCase):
                 with self.subTest(path=str(path.relative_to(ROOT)), marker=marker):
                     self.assertNotIn(marker, content)
 
-        workbook = load_workbook(SOURCE, read_only=True, data_only=False)
-        for worksheet in workbook.worksheets:
-            for row in worksheet.iter_rows():
-                for cell in row:
-                    if not isinstance(cell.value, str):
-                        continue
-                    for marker in LEGACY_PROTOCOL_MARKERS:
-                        with self.subTest(sheet=worksheet.title, cell=cell.coordinate, marker=marker):
-                            self.assertNotIn(marker, cell.value)
-
-    def test_rst_sourced_pages_no_longer_reference_workbook_sheets(self):
-        # 0x02～0x05、0x0A、0x11～0x13 now come from HoneyBox markdown, so the
-        # workbook no longer has to carry the sheets those pages used to cite.
-        missing = self.manifest["checks"]["missing_referenced_sheets"]
-        self.assertEqual(missing, {})
-        self.assertEqual(self.manifest["checks"]["formula_errors"], [])
+    def test_manifest_lists_document_sources_without_workbook(self):
         index = self.page("index.rst")
         self.assertNotIn(".. warning::", index)
+        self.assertNotIn("工作簿", index)
         self.assertEqual(
             self.manifest["rst_sourced"],
             [
@@ -556,6 +517,11 @@ class ProtocolRenderingTests(unittest.TestCase):
                 "0x13-audio.rst",
             ],
         )
+        self.assertEqual(
+            self.manifest["appendix"],
+            ["weather-types.rst", "language-codes.rst"],
+        )
+        self.assertNotIn("source_sha256", self.manifest)
 
     def test_admonitions_do_not_repeat_manual_titles(self):
         document_paths = set(self.outputs) | set(OUTPUT_DIR.glob("*.rst"))
