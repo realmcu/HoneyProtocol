@@ -19,6 +19,7 @@ RST_SOURCED_DOCUMENTS = (
     ("0x03-bind.rst", "0x03 绑定命令", "03"),
     ("0x04-notification.rst", "0x04 通知命令", "04"),
     ("0x05-data.rst", "0x05 数据命令", "05"),
+    ("0x06-factory-test.rst", "0x06 工厂测试命令", "06"),
     ("0x0a-log.rst", "0x0A 日志命令", "0A"),
     ("0x11-measurement.rst", "0x11 点测命令", "11"),
     ("0x12-simulator.rst", "0x12 模拟数据命令", "12"),
@@ -27,7 +28,6 @@ RST_SOURCED_DOCUMENTS = (
 
 MANUAL_DOCUMENTS = (
     ("0x01-firmware-upgrade.rst", "0x01 固件升级命令", "01"),
-    ("0x06-factory-test.rst", "0x06 工厂测试命令", "06"),
     ("0x08-dump-stack.rst", "0x08 Dump Stack 命令", "08"),
     ("0x09-flash-read.rst", "0x09 测试 Flash 读取命令", "09"),
     ("0x0c-ble-conn-param.rst", "0x0C BLE 连接参数命令", "0C"),

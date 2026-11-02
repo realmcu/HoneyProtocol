@@ -13,7 +13,6 @@ from tools.sync_protocol import (
 
 MANUAL_COMMANDS = (
     "0x01-firmware-upgrade.rst",
-    "0x06-factory-test.rst",
     "0x0c-ble-conn-param.rst",
     "0x0d-wifi-provision.rst",
     "0x10-file-transfer.rst",
@@ -511,6 +510,7 @@ class ProtocolRenderingTests(unittest.TestCase):
                 "0x03-bind.rst",
                 "0x04-notification.rst",
                 "0x05-data.rst",
+                "0x06-factory-test.rst",
                 "0x0a-log.rst",
                 "0x11-measurement.rst",
                 "0x12-simulator.rst",

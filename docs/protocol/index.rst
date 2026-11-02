@@ -31,8 +31,8 @@ L2 Command 详解
      - RST
    * - ``0x06``
      - :doc:`工厂测试命令 <0x06-factory-test>`
-     - 未标注
-     - 手工维护
+     - 草案
+     - RST
    * - ``0x08``
      - :doc:`Dump Stack 命令 <0x08-dump-stack>`
      - 未标注

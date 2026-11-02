@@ -4,6 +4,7 @@
     "0x03-bind.rst",
     "0x04-notification.rst",
     "0x05-data.rst",
+    "0x06-factory-test.rst",
     "0x0a-log.rst",
     "0x11-measurement.rst",
     "0x12-simulator.rst",
@@ -15,7 +16,6 @@
   ],
   "manual_commands": [
     "0x01-firmware-upgrade.rst",
-    "0x06-factory-test.rst",
     "0x08-dump-stack.rst",
     "0x09-flash-read.rst",
     "0x0c-ble-conn-param.rst",
@@ -52,6 +52,13 @@
       "source": "RST"
     },
     {
+      "filename": "0x06-factory-test.rst",
+      "title": "0x06 工厂测试命令",
+      "command": "06",
+      "status": "草案。具体命令表为 E_Tool 勾选且走 ``0x06`` 的 Key 全集（迁移自 HL §6）。E_Tool 中的点测、设置、固件/LE OTA、记录上传等 **不走本表**，见 :doc:`点测命令 <0x11-measurement>`、:doc:`设置命令 <0x02-settings>` 或 SDK/App 服务端。**非终版**。",
+      "source": "RST"
+    },
+    {
       "filename": "0x0a-log.rst",
       "title": "0x0A 日志命令",
       "command": "0A",
@@ -83,13 +90,6 @@
       "filename": "0x01-firmware-upgrade.rst",
       "title": "0x01 固件升级命令",
       "command": "01",
-      "status": null,
-      "source": "手工维护"
-    },
-    {
-      "filename": "0x06-factory-test.rst",
-      "title": "0x06 工厂测试命令",
-      "command": "06",
       "status": null,
       "source": "手工维护"
     },
