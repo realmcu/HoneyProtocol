@@ -55,7 +55,7 @@
       "filename": "0x06-factory-test.rst",
       "title": "0x06 工厂测试命令",
       "command": "06",
-      "status": "草案。具体命令表为 E_Tool 勾选且走 ``0x06`` 的 Key 全集（迁移自 HL §6）。E_Tool 中的点测、设置、固件/LE OTA、记录上传等 **不走本表**，见 :doc:`点测命令 <0x11-measurement>`、:doc:`设置命令 <0x02-settings>` 或 SDK/App 服务端。**非终版**。",
+      "status": "第一版本",
       "source": "RST"
     },
     {
