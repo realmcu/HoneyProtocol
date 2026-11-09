@@ -337,6 +337,15 @@ class ProtocolRenderingTests(unittest.TestCase):
         self.assertNotIn("20 bytes", architecture)
         self.assertIn("L1 通过拆包/组包支持最大 **65535 bytes** payload", architecture)
 
+    def test_l1_header_exposes_ack_request_bit(self):
+        architecture = (ROOT / "docs/architecture.rst").read_text(encoding="utf-8")
+        self.assertIn("| 1 [7]   | Reserve", architecture)
+        self.assertIn("| 1 [6]   | ACK request", architecture)
+        self.assertIn("1 = 本包要求接收方返回 ACK；0 = 不要求", architecture)
+        self.assertIn("数据包（要求 ACK）", architecture)
+        self.assertIn("ACK 包的 ACK request（bit6）必须为 0", architecture)
+        self.assertNotIn("| 1 [7:6] | Reserve", architecture)
+
     def test_l2_payload_table_uses_compact_unit_layout(self):
         architecture = (ROOT / "docs/architecture.rst").read_text(encoding="utf-8")
         self.assertIn("L2 Payload 由连续的 Key-Value 单元组成", architecture)
