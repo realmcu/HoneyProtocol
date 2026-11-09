@@ -50,7 +50,7 @@
          <div class="protocol-adapters" aria-label="支持的传输承载">
            <div class="protocol-adapter protocol-adapter--ble">
              <span class="protocol-adapter__mark">BLE</span>
-             <span class="protocol-adapter__name">UART Profile</span>
+             <span class="protocol-adapter__name">HMI Service</span>
              <span class="protocol-adapter__meta">GATT · Write / Notify</span>
            </div>
            <div class="protocol-adapter protocol-adapter--uart">
@@ -74,36 +74,45 @@
 
 .. note::
 
-   L0 是可插拔接入层，L1/L2 不依赖具体承载。BLE 使用 UART Profile；UART 与 Socket 可复用相同的 L1
-   传输语义。当前规范细节以 BLE UART Profile 为主。
+   L0 是可插拔接入层，L1/L2 不依赖具体承载。BLE 使用私有 HMIS GATT 服务；UART 与 Socket 可复用相同的 L1
+   传输语义。当前规范细节以 BLE HMIS 为主。
 
-.. _l0-uart-profile-ble:
+.. _l0-hmis-ble:
 
 L0 接入承载
 -----------
 
-BLE UART Profile
-~~~~~~~~~~~~~~~~
+BLE HMIS 私有服务
+~~~~~~~~~~~~~~~~~
 
-.. table:: GATT 服务 UUID
-   :class: protocol-table columns-2
+.. list-table:: BLE HMIS GATT Profile
+   :header-rows: 1
+   :widths: 34 42 24
+   :class: protocol-table columns-3
 
-   +----------------------+-----------------------------------------------------------------+
-   | 角色                 | UUID                                                            |
-   +======================+=================================================================+
-   | UART Profile Service | ``6e400001-b5a3-f393-e0a9-e50e24dcca9e``                        |
-   +----------------------+-----------------------------------------------------------------+
-   | Write Characteristic | ``6e400002-b5a3-f393-e0a9-e50e24dcca9e``                        |
-   +----------------------+-----------------------------------------------------------------+
-   | Read Characteristic  | ``6e400003-b5a3-f393-e0a9-e50e24dcca9e``\ （Notification 模式） |
-   +----------------------+-----------------------------------------------------------------+
+   * - 角色
+     - UUID
+     - 方向与属性
+   * - HMIS Service
+     - ``484d4953-0000-1000-8000-00805f9b34fb``
+     - GATT Service
+   * - Write Characteristic
+     - ``0xFFC1``
+     - Phone → Device，Write / Write No Rsp
+   * - Notify Characteristic
+     - ``0xFFC2``
+     - Device → Phone，Notify
+   * - Read Characteristic
+     - ``0xFFC3``
+     - Phone ← Device，Read
 
 说明
 ~~~~
 
-1. **Device 端（Master）**\ ：实现 UART Profile，提供 write + read 两个 characteristic。
-2. **Phone 端（Slave）**\ ：基于 character operation 实现 write interface 和 receive interface。
-3. Phone 端 receive 基于 **notify** 模式；Device 端 receive 基于 **write character**\ （push 方式，非 pull）。
+1. **Device 端（GATT Server）**\ ：实现 HMIS 私有服务，提供 Write、Notify 与 Read 三个 characteristic。
+2. **Phone 端（GATT Client）**\ ：向 Write characteristic 写入协议数据，订阅 Notify characteristic，并按需读取 Read characteristic。
+3. Write 与 Notify 在通信协议层是并列的数据通道，不构成主通道、子通道或请求/响应层级；两者承载相同的 L2 协议帧。
+4. 方向区分：Phone → Device 通过 Write；Device → Phone 通过 Notify。Read 只用于读取设备状态，不承载业务数据流。
 
 .. _l1-transport-layer:
 
@@ -117,7 +126,7 @@ L1 传输层
 2. L1 通过拆包/组包支持最大 **65535 bytes** payload（16-bit 长度字段）。
 3. 实现 **ACK 机制**\ ：接收方校验后发送 success/error ACK。
 4. 重传：收到 error ACK 或超时后重发，失败结果上报 L2。
-5. L1 数据包格式与具体承载解耦，可在 BLE UART Profile、UART、Socket 等链路上复用。
+5. L1 数据包格式与具体承载解耦，可在 BLE HMIS、UART、Socket 等链路上复用。
 
 L1 数据包结构
 ~~~~~~~~~~~~~

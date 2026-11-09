@@ -322,10 +322,13 @@ class ProtocolRenderingTests(unittest.TestCase):
                     self.assertIn(heading(title, 2), page)
                 self.assertNotRegex(page, r"(?m)^[12]\.\d+(?:\.\d+)? .+\n[-~]+")
         architecture = (ROOT / "docs/architecture.rst").read_text(encoding="utf-8")
-        self.assertIn(heading("BLE UART Profile", 3), architecture)
+        self.assertIn(heading("BLE HMIS 私有服务", 3), architecture)
         self.assertNotIn(heading("GATT 服务 UUID", 3), architecture)
-        for anchor in ("l0-uart-profile-ble", "l1-transport-layer", "l2-application-layer"):
+        for anchor in ("l0-hmis-ble", "l1-transport-layer", "l2-application-layer"):
             self.assertIn(f".. _{anchor}:", architecture)
+        conventions = (ROOT / "docs/conventions.rst").read_text(encoding="utf-8")
+        self.assertIn("BLE Peripheral / GATT Server", conventions)
+        self.assertIn("BLE Central / GATT Client", conventions)
 
     def test_architecture_does_not_impose_a_20_byte_mtu_limit(self):
         architecture = (ROOT / "docs/architecture.rst").read_text(encoding="utf-8")
@@ -358,7 +361,21 @@ class ProtocolRenderingTests(unittest.TestCase):
             with self.subTest(heading=heading_text):
                 self.assertNotIn(heading(heading_text, 3), architecture)
                 self.assertIn(caption, architecture)
-        self.assertIn(".. table:: GATT 服务 UUID", architecture)
+        self.assertIn(".. list-table:: BLE HMIS GATT Profile", architecture)
+        self.assertIn("484d4953-0000-1000-8000-00805f9b34fb", architecture)
+        self.assertIn("Write Characteristic", architecture)
+        self.assertIn("Notify Characteristic", architecture)
+        self.assertIn("Read Characteristic", architecture)
+        self.assertIn("0xFFC1", architecture)
+        self.assertIn("0xFFC2", architecture)
+        self.assertIn("0xFFC3", architecture)
+        self.assertIn("**Device 端（GATT Server）**", architecture)
+        self.assertIn("**Phone 端（GATT Client）**", architecture)
+        self.assertIn("Write 与 Notify 在通信协议层是并列的数据通道", architecture)
+        self.assertIn("两者承载相同的 L2 协议帧", architecture)
+        self.assertNotIn("6e40000", architecture.lower())
+        self.assertNotIn("UART Profile", architecture)
+        self.assertNotIn("NUS", architecture)
 
         wifi = (OUTPUT_DIR / "0x0d-wifi-provision.rst").read_text(encoding="utf-8")
         self.assertIn(".. list-table:: error 错误码\n", wifi)
