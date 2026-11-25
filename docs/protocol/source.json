@@ -8,7 +8,8 @@
     "0x0a-log.rst",
     "0x11-measurement.rst",
     "0x12-simulator.rst",
-    "0x13-audio.rst"
+    "0x13-audio.rst",
+    "0x14-audio-stream-upload.rst"
   ],
   "appendix": [
     "weather-types.rst",
@@ -83,6 +84,13 @@
       "filename": "0x13-audio.rst",
       "title": "0x13 音频命令",
       "command": "13",
+      "status": "第一版本",
+      "source": "RST"
+    },
+    {
+      "filename": "0x14-audio-stream-upload.rst",
+      "title": "0x14 音频上传命令",
+      "command": "14",
       "status": "第一版本",
       "source": "RST"
     },

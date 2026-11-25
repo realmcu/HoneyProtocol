@@ -24,6 +24,7 @@ RST_SOURCED_DOCUMENTS = (
     ("0x11-measurement.rst", "0x11 点测命令", "11"),
     ("0x12-simulator.rst", "0x12 模拟数据命令", "12"),
     ("0x13-audio.rst", "0x13 音频命令", "13"),
+    ("0x14-audio-stream-upload.rst", "0x14 音频上传命令", "14"),
 )
 
 MANUAL_DOCUMENTS = (

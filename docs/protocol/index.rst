@@ -69,6 +69,10 @@ L2 Command 详解
      - :doc:`音频命令 <0x13-audio>`
      - 第一版本
      - RST
+   * - ``0x14``
+     - :doc:`音频上传命令 <0x14-audio-stream-upload>`
+     - 第一版本
+     - RST
 
 .. note::
 
@@ -93,3 +97,4 @@ L2 Command 详解
    0x11-measurement
    0x12-simulator
    0x13-audio
+   0x14-audio-stream-upload

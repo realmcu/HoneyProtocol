@@ -541,6 +541,7 @@ class ProtocolRenderingTests(unittest.TestCase):
                 "0x11-measurement.rst",
                 "0x12-simulator.rst",
                 "0x13-audio.rst",
+                "0x14-audio-stream-upload.rst",
             ],
         )
         self.assertEqual(
