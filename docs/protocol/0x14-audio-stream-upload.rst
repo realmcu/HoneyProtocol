@@ -45,16 +45,18 @@
 规则
 ----
 
-1. 本命令用于设备把麦克风实时 Opus 音频流单向传给手机。会话由设备主动开始，手机不能通过本命令请求开始录音；手机只在需要提前终止时发送 CANCEL_REQ。
-2. 一条 BLE 连接同一时刻只允许一个音频上传会话。设备开始录音和编码后发送 ``0x01`` START，随后发送 DATA，结束时发送 ``0x03`` STOP。
-3. START 的 Value 携带本次流的实际 Opus 参数。手机收到 START 后应初始化 Opus 解码器；收到非 Opus codec 或无法支持的参数时忽略本次会话。
-4. 第一版本固定使用 Opus 16 kHz、单声道、20 ms 帧、16 kbps CBR。后续版本可在 Value 末尾追加参数，现有字段保持不变。
-5. ``0x02`` DATA 只允许设备发送。手机忽略手机到设备的 DATA。设备发送 STOP 后不得再发送 DATA。
-6. ``0x04`` CANCEL_REQ 由手机发送，Value 为空（Length = 0）。设备收到后尽快停止麦克风采样、Opus 编码和 DATA 发送，并发送 STOP，``reason = 0x01``\ （手机取消）。CANCEL_REQ 不单独返回 L2 响应。
-7. START、STOP 和 CANCEL_REQ 应请求 L1 ACK。DATA 为实时媒体数据，不建议请求 L1 ACK，避免重传造成队头阻塞；DATA 仍受 L1 CRC 保护，丢失由序号缺口和 Opus PLC 处理。
-8. BLE 断开时设备自动结束会话，不保存“正在上传”状态。重连后由设备决定是否开始新会话；新会话从 START 开始，DATA 序号和流时间重新从 ``0`` 计数。
-9. 建议 ATT MTU 不小于 64，连接间隔不大于 30 ms，并优先使用 2M PHY。设备无法满足实时传输条件时不应发送 START。
-10. 扩展时只在已有 Value 末尾追加字段。接收方忽略未知尾部字段；不得改变已有字段顺序、宽度或含义。
+1. RECORD_REQ 是可选请求，不是每次上传会话的必备步骤。设备可以由本地操作或其他业务条件自行开始录音，准备完成后直接发送 ``0x01`` START，随后发送 DATA，结束时发送 ``0x03`` STOP。
+2. 手机需要主动触发设备录音时，可发送 ``0x05`` RECORD_REQ，Value 为空（Length = 0）。设备接受后发送 START；手机应以 START 作为会话真正开始的唯一标志，不能只根据 RECORD_REQ 发送成功判断录音已开始。
+3. 一条 BLE 连接同一时刻只允许一个音频上传会话。会话已存在时，设备忽略重复的 RECORD_REQ；已有会话继续发送，不重新开始。
+4. 设备收到 RECORD_REQ 后无法开始录音时发送 ``0x03`` STOP，``reason = 0x04``\ （请求被拒绝），不得发送 START 或 DATA。设备自行开始失败时也可以发送该 STOP；手机以 STOP 结束本次等待。
+5. START 的 Value 携带本次流的实际 Opus 参数。手机收到 START 后应初始化 Opus 解码器；收到非 Opus codec 或无法支持的参数时忽略本次会话。
+6. 第一版本固定使用 Opus 16 kHz、单声道、20 ms 帧、16 kbps CBR。后续版本可在 Value 末尾追加参数，现有字段保持不变。
+7. ``0x02`` DATA 只允许设备发送。手机忽略手机到设备的 DATA。设备发送 STOP 后不得再发送 DATA。
+8. ``0x04`` CANCEL_REQ 由手机发送，Value 为空（Length = 0）。设备收到后尽快停止麦克风采样、Opus 编码和 DATA 发送，并发送 STOP，``reason = 0x01``\ （手机取消）。CANCEL_REQ 不单独返回 L2 响应。
+9. RECORD_REQ、START、STOP 和 CANCEL_REQ 应请求 L1 ACK。DATA 为实时媒体数据，不建议请求 L1 ACK，避免重传造成队头阻塞；DATA 仍受 L1 CRC 保护，丢失由序号缺口和 Opus PLC 处理。
+10. BLE 断开时设备自动结束会话，不保存“正在上传”状态。重连后设备可以自行开始新会话，也可以等待手机发送 RECORD_REQ；无论哪种方式，手机都以收到的 START 作为新会话起点，DATA 序号和流时间重新从 ``0`` 计数。
+11. 建议 ATT MTU 不小于 64，连接间隔不大于 30 ms，并优先使用 2M PHY。设备无法满足实时传输条件时不应发送 START；若是响应 RECORD_REQ，则用 STOP 拒绝。
+12. 扩展时只在已有 Value 末尾追加字段。接收方忽略未知尾部字段；不得改变已有字段顺序、宽度或含义。
 
 .. list-table:: Key 定义
    :header-rows: 1
@@ -80,6 +82,10 @@
      - CANCEL_REQ
      - 手机 → 设备
      - 手机要求设备停止当前上传
+   * - ``0x05``
+     - RECORD_REQ
+     - 手机 → 设备
+     - 可选：手机主动请求设备开始麦克风录音和音频上传
 
 .. list-table:: START 数据字段
    :header-rows: 1
@@ -126,6 +132,9 @@
    * - ``0x03``
      - TRANSPORT_ERROR
      - 设备侧传输资源异常导致停止
+   * - ``0x04``
+     - REQUEST_REJECTED
+     - 设备无法开始录音，拒绝 RECORD_REQ
 
 .. list-table:: STOP 数据字段
    :header-rows: 1
@@ -178,6 +187,11 @@
      - 方向
      - 具体的命令
      - 数据说明
+   * - 0x05
+     - RECORD_REQ / 手机可选请求录音
+     - 手机 → 设备
+     - ``14 00 05 00 00``
+     - Value 为空。设备成功时回 START，失败时回 STOP（reason=04），不单独返回 RECORD_REQ 响应。设备也可不等待该请求自行发送 START
    * - 0x01
      - START / 开始音频上传
      - 设备 → 手机
@@ -193,11 +207,16 @@
      - 设备 → 手机
      - ``14 00 03 00 01 00``
      - reason=00，正常结束
-   * - 
+   * -
      - STOP / 手机取消
      - 设备 → 手机
      - ``14 00 03 00 01 01``
      - reason=01，设备已按 CANCEL_REQ 停止
+   * -
+     - STOP / 请求被拒绝
+     - 设备 → 手机
+     - ``14 00 03 00 01 04``
+     - reason=04，设备无法开始录音
    * - 0x04
      - CANCEL_REQ / 手机要求停止
      - 手机 → 设备
