@@ -5,7 +5,7 @@
 
 .. container:: doc-status
 
-   **第一版本**\ 　设备麦克风实时上传 Opus 音频流。
+   **第一版本**\ 　设备麦克风实时上传 PCM 音频流；Opus codec 值保留给后续版本。
 
 .. _cmd-14-section-1:
 
@@ -38,7 +38,8 @@
      - —
      - 见 :ref:`具体命令 <cmd-14-section-3>`
 
-多字节整数均使用 Big-Endian。Opus 数据为裸包，不包含 Ogg 封装、文件头或额外头部。
+多字节整数均使用 Big-Endian。PCM 为裸小端有符号 16-bit 采样，不包含 WAV 头；
+Opus 后续版本使用裸包，不包含 Ogg 封装或文件头。
 
 .. _cmd-14-section-2:
 
@@ -49,13 +50,13 @@
 2. 手机需要主动触发设备录音时，可发送 ``0x05`` RECORD_REQ，Value 为空（Length = 0）。设备接受后发送 START；手机应以 START 作为会话真正开始的唯一标志，不能只根据 RECORD_REQ 发送成功判断录音已开始。
 3. 一条 BLE 连接同一时刻只允许一个音频上传会话。会话已存在时，设备忽略重复的 RECORD_REQ；已有会话继续发送，不重新开始。
 4. 设备收到 RECORD_REQ 后无法开始录音时发送 ``0x03`` STOP，``reason = 0x04``\ （请求被拒绝），不得发送 START 或 DATA。设备自行开始失败时也可以发送该 STOP；手机以 STOP 结束本次等待。
-5. START 的 Value 携带本次流的实际 Opus 参数。手机收到 START 后应初始化 Opus 解码器；收到非 Opus codec 或无法支持的参数时忽略本次会话。
-6. 第一版本固定使用 Opus 16 kHz、单声道、20 ms 帧、16 kbps CBR。后续版本可在 Value 末尾追加参数，现有字段保持不变。
+5. START 的 Value 携带本次流的实际音频参数。手机收到 START 后应按 codec 初始化接收链路；收到无法支持的 codec 或参数时忽略本次会话。
+6. 第一版本固定使用 PCM signed 16-bit little-endian、16 kHz、单声道、15 ms/包、480 B/包。Opus codec ``0x01`` 为后续版本保留。扩展参数追加在 Value 末尾，现有字段保持不变。
 7. ``0x02`` DATA 只允许设备发送。手机忽略手机到设备的 DATA。设备发送 STOP 后不得再发送 DATA。
-8. ``0x04`` CANCEL_REQ 由手机发送，Value 为空（Length = 0）。设备收到后尽快停止麦克风采样、Opus 编码和 DATA 发送，并发送 STOP，``reason = 0x01``\ （手机取消）。CANCEL_REQ 不单独返回 L2 响应。
-9. RECORD_REQ、START、STOP 和 CANCEL_REQ 应请求 L1 ACK。DATA 为实时媒体数据，不建议请求 L1 ACK，避免重传造成队头阻塞；DATA 仍受 L1 CRC 保护，丢失由序号缺口和 Opus PLC 处理。
+8. ``0x04`` CANCEL_REQ 由手机发送，Value 为空（Length = 0）。设备收到后尽快停止麦克风采样、codec 处理和 DATA 发送，并发送 STOP，``reason = 0x01``\ （手机取消）。CANCEL_REQ 不单独返回 L2 响应。
+9. RECORD_REQ、START、STOP 和 CANCEL_REQ 应请求 L1 ACK。DATA 为实时媒体数据，不建议请求 L1 ACK，避免重传造成队头阻塞；DATA 仍受 L1 CRC 保护，丢失由序号缺口检测，PCM 不执行 PLC。
 10. BLE 断开时设备自动结束会话，不保存“正在上传”状态。重连后设备可以自行开始新会话，也可以等待手机发送 RECORD_REQ；无论哪种方式，手机都以收到的 START 作为新会话起点，DATA 序号和流时间重新从 ``0`` 计数。
-11. 建议 ATT MTU 不小于 64，连接间隔不大于 30 ms，并优先使用 2M PHY。设备无法满足实时传输条件时不应发送 START；若是响应 RECORD_REQ，则用 STOP 拒绝。
+11. 建议 ATT MTU 不小于 64，连接间隔不大于 30 ms，并优先使用 2M PHY。PCM 16 kHz 单声道的数据率约为 32 KB/s，手机与设备都应避免在发送路径上做同步文件写入。设备无法满足实时传输条件时不应发送 START；若是响应 RECORD_REQ，则用 STOP 拒绝。
 12. 扩展时只在已有 Value 末尾追加字段。接收方忽略未知尾部字段；不得改变已有字段顺序、宽度或含义。
 
 .. list-table:: Key 定义
@@ -73,7 +74,7 @@
    * - ``0x02``
      - DATA
      - 设备 → 手机
-     - 一个或多个 Opus 帧，带序号和时间戳
+     - 一个或多个音频帧，带序号和时间戳；第一版本为 PCM
    * - ``0x03``
      - STOP
      - 设备 → 手机
@@ -96,7 +97,7 @@
      - 说明
    * - codec
      - 1 byte
-     - ``0x01`` = Opus
+     - ``0x01`` = Opus（后续版本）；``0x02`` = PCM signed 16-bit little-endian（第一版本）
    * - sample_rate
      - 4 bytes
      - 采样率，单位 Hz；第一版本为 ``16000``\ （``00003E80``）
@@ -105,13 +106,19 @@
      - 声道数；第一版本为 ``1``
    * - frame_ms
      - 1 byte
-     - 每帧时长，单位 ms；第一版本为 ``20``\ （``0x14``）
+     - 每帧时长，单位 ms；第一版本为 ``15``\ （``0x0F``）
    * - bitrate_bps
      - 2 bytes
-     - 编码码率，单位 bit/s；第一版本为 ``16000``\ （``3E80``）
+     - 编码码率，单位 bit/s；PCM 不适用，第一版本填 ``0``。Opus 后续使用该字段。
    * - frames_per_packet
      - 1 byte
-     - 每个 DATA 建议封装的帧数；第一版本为 ``4``
+     - 每个 DATA 建议封装的帧数；PCM 第一版本为 ``1``
+   * - sample_bits
+     - 1 byte
+     - PCM 扩展字段，第一版本为 ``16``；Opus 不使用
+   * - frame_bytes
+     - 2 bytes
+     - PCM 扩展字段，每帧字节数；第一版本为 ``480``\ （``01E0``）；Opus 不使用
 
 .. list-table:: STOP reason
    :header-rows: 1
@@ -128,7 +135,7 @@
      - 设备收到 CANCEL_REQ 后停止
    * - ``0x02``
      - AUDIO_ERROR
-     - 麦克风、编码器或音频轨异常导致停止
+     - 麦克风、codec 或音频轨异常导致停止
    * - ``0x03``
      - TRANSPORT_ERROR
      - 设备侧传输资源异常导致停止
@@ -162,15 +169,15 @@
      - 包内第一帧的设备流时间，单位 ms；从会话开始计时，允许 32 位回绕
    * - frame_count
      - 1 byte
-     - 本包 Opus 帧数，取值 1～4；通常为 4
+     - 本包音频帧数；PCM 第一版本固定为 ``1``，Opus 后续取值 1～4
    * - reserved
      - 1 byte
      - 第一版本必须为 ``0x00``
    * - frames
      - 可变
-     - 重复 frame_count 次：2B Opus 长度 + N B Opus 裸包
+     - 重复 frame_count 次：2B 帧字节数 + N B 帧载荷。PCM 载荷为 little-endian signed 16-bit 单声道采样。
 
-每个 Opus 帧对应 20 ms PCM。包内后续帧时间按前一个帧递增 20 ms，不因 BLE 到达时间变化。手机遇到 seq 缺口时丢弃当前播放队列并按需执行 Opus PLC，不回送重传请求。
+每个 PCM 包对应 15 ms 音频。包内后续帧时间按其实际时长递增，不因 BLE 到达时间变化。手机遇到 seq 缺口时应记录丢包；PCM 不做 PLC，Opus 后续版本可按需执行 PLC。实时数据不回送重传请求。
 
 .. _cmd-14-section-3:
 
@@ -195,13 +202,13 @@
    * - 0x01
      - START / 开始音频上传
      - 设备 → 手机
-     - ``14 00 01 00 0A 01 00 00 3E 80 01 14 3E 80 04``
-     - codec=Opus；16 kHz；单声道；20 ms；16 kbps；每包 4 帧
+     - ``14 00 01 00 0D 02 00 00 3E 80 01 0F 00 00 01 10 01 E0``
+     - codec=PCM；16 kHz；单声道；15 ms；bitrate 字段不适用；1 帧/包；16 bit；480 B/帧
    * - 0x02
      - DATA / 单帧示例
      - 设备 → 手机
-     - ``14 00 02 00 0C 00 00 00 00 00 00 01 00 00 04 0A 0B 0C 0D``
-     - seq=0；timestamp=0 ms；1 帧；Opus 长度 4B。Opus 内容仅用于展示布局
+     - ``14 00 02 01 EA 00 00 00 00 00 00 01 00 01 E0`` + 480 B PCM
+     - seq=0；timestamp=0 ms；1 帧；帧长度 480 B；后接 PCM 采样
    * - 0x03
      - STOP / 正常结束
      - 设备 → 手机
